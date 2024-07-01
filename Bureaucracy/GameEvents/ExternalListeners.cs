@@ -181,7 +181,14 @@ namespace Bureaucracy
         private void OnContractOffered(Contract contract)
         {
             if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) return;
-            ContractInterceptor.Instance.OnContractOffered(contract);
+            try
+            {
+                ContractInterceptor.Instance.OnContractOffered(contract);
+            }
+            catch
+            {
+                //wrong game scene but do not die
+            }
         }
 
         private void AddLaunch(ShipConstruct ship)

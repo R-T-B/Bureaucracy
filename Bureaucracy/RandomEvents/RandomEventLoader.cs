@@ -17,18 +17,25 @@ namespace Bureaucracy
             Instance = this;
         }
 
-        private void RollEvent()
+        public void RollEvent()
         {
-            if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) return;
-            if (!SettingsClass.Instance.RandomEventsEnabled || Utilities.Instance.Randomise.NextDouble() > SettingsClass.Instance.RandomEventChance) return;
-            if (cooldownTimer > Planetarium.GetUniversalTime()) return;
-            LoadEvents();
-            RandomEventBase e = loadedEvents.ElementAt(Utilities.Instance.Randomise.Next(0, loadedEvents.Count));
-            Debug.Log("[Bureaucracy]: Attempting to Fire Event "+e.Name);
-            if (!e.EventCanFire()) return;
+            if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER)
+            {
+                return;
+            }
+            if (!SettingsClass.Instance.RandomEventsEnabled || Utilities.Instance.Randomise.NextDouble() > (double)SettingsClass.Instance.RandomEventChance)
+            {
+                return;
+            }
+            this.LoadEvents();
+            RandomEventBase randomEventBase = this.loadedEvents.ElementAt(Utilities.Instance.Randomise.Next(0, this.loadedEvents.Count));
+            Debug.Log("[Bureaucracy]: Attempting to Fire Event " + randomEventBase.Name);
+            if (!randomEventBase.EventCanFire())
+            {
+                return;
+            }
             Debug.Log("[Bureaucracy]: EventCanFire");
-            e.OnEventFire();
-            cooldownTimer = Planetarium.GetUniversalTime() + FlightGlobals.GetHomeBody().solarDayLength * 30;
+            randomEventBase.OnEventFire();
         }
 
         private void LoadEvents()
@@ -83,7 +90,6 @@ namespace Bureaucracy
             ConfigNode eventNode = cn.GetNode("EVENTS");
             if (eventNode == null) return;
             double.TryParse(eventNode.GetValue("cooldown"), out cooldownTimer);
-            RollEvent();
         }
     }
 }

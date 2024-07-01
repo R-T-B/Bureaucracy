@@ -14,11 +14,17 @@ namespace Bureaucracy
         {
             ReportBuilder.Clear();
             Dictionary<CrewMember, string> unhappyCrew = CrewManager.Instance.UnhappyCrewOutcomes;
-            if (unhappyCrew.Count == 0) return "No Crew Issues";
-            for (int i = 0; i < unhappyCrew.Count; i++)
+            if (unhappyCrew.Count == 0)
             {
-                KeyValuePair<CrewMember, string> unhappyCrewMember = unhappyCrew.ElementAt(i);
-                ReportBuilder.AppendLine(unhappyCrewMember.Key.Name + ": " + unhappyCrewMember.Value);
+                this.ReportBuilder.AppendLine("No Crew Issues");
+            }
+            else
+            {
+                for (int i = 0; i < unhappyCrew.Count; i++)
+                {
+                    KeyValuePair<CrewMember, string> unhappyCrewMember = unhappyCrew.ElementAt(i);
+                    ReportBuilder.AppendLine(unhappyCrewMember.Key.Name + ": " + unhappyCrewMember.Value);
+                }
             }
 
             if (SettingsClass.Instance.RetirementEnabled)

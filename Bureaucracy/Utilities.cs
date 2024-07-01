@@ -31,7 +31,14 @@ namespace Bureaucracy
             };
             AlarmClockScenario.AddAlarm(alarmToSet);
         }
-        
+        public static double LocalSolarTime(CelestialBody body)
+        {
+            double solarDayLength = body.solarDayLength;
+            double universalTime = Planetarium.GetUniversalTime();
+            double num = (double)((int)(universalTime / solarDayLength));
+            double num2 = (universalTime - num * solarDayLength) / solarDayLength * 24.0;
+            return num2;
+        }
         public double GetGrossBudget()
         {
             return Math.Round(Reputation.Instance.reputation * SettingsClass.Instance.BudgetMultiplier, 0);

@@ -205,10 +205,8 @@ namespace Bureaucracy
                     return GetAllocation(BudgetManager.Instance).ToString(CultureInfo.CurrentCulture);
                 case "Research":
                     return GetAllocation(ResearchManager.Instance).ToString(CultureInfo.CurrentCulture);
-                    break;
                 case "Construction":
                     return GetAllocation(FacilityManager.Instance).ToString(CultureInfo.CurrentCulture);
-                    break;
             }
 
             return passedString;

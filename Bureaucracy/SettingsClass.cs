@@ -16,7 +16,7 @@ namespace Bureaucracy
         public bool HardMode;
         public bool RepDecayEnabled;
         public bool RandomEventsEnabled = true;
-        public float RandomEventChance = 0.05f;
+        public float RandomEventChance = 0.025f;
         public bool AstronautTraining = true;
         public float TimeBetweenBudgets = 30.0f;
         public int BudgetMultiplier = 2227;
@@ -46,8 +46,8 @@ namespace Bureaucracy
         public int DeadKerbalPenalty = 25;
         public bool SuppressMessages = false;
         private readonly string defaultPath;
-        private const string SettingsVersion = "1.6";
-        private const string PreviousVersion = "1.4.0.1";
+        private const string SettingsVersion = "1.7";
+        private const string PreviousVersion = "1.6";
         private readonly string savePath;
 
         public SettingsClass()
@@ -101,7 +101,16 @@ namespace Bureaucracy
             bool.TryParse(cn.GetValue("RepDecayEnabled"), out RepDecayEnabled);
             bool.TryParse(cn.GetValue("AstronautTrainingEnabled"), out AstronautTraining);
             bool.TryParse(cn.GetValue("RandomEventsEnabled"), out RandomEventsEnabled);
-            float.TryParse(cn.GetValue("RandomEventChance"), out RandomEventChance);
+            if (saveVersion.Equals(SettingsVersion))
+            {
+                float.TryParse(cn.GetValue("RandomEventChance"), out RandomEventChance);
+            }
+            else
+            {
+                float.TryParse(cn.GetValue("RandomEventChance"), out RandomEventChance);
+                RandomEventChance *= 0.5f;
+            }
+
             float.TryParse(cn.GetValue("TimeBetweenBudgetsDays"), out TimeBetweenBudgets);
             int.TryParse(cn.GetValue("RepToFundsMultiplier"), out BudgetMultiplier);
             int.TryParse(cn.GetValue("ScienceToFundsMultiplier"), out ScienceMultiplier);
