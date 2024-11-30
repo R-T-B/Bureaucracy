@@ -101,7 +101,8 @@ namespace Bureaucracy
         {
             List<DialogGUIBase> dialogElements = new List<DialogGUIBase>();
             List<DialogGUIBase> innerElements = new List<DialogGUIBase>();
-            innerElements.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
+            innerElements.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.MinSize, true));
+            innerElements.Add(new DialogGUISpace(10));
             DialogGUIBase[] horizontal;
             for (int i = 0; i < CrewManager.Instance.Kerbals.Count; i++)
             {
@@ -109,20 +110,33 @@ namespace Bureaucracy
                 if (crew.Value.CrewReference().rosterStatus != ProtoCrewMember.RosterStatus.Available) continue;
                 if (crew.Value.CrewReference().inactive) continue;
                 if (crew.Value.CrewReference().experienceLevel >= 5) continue;
-                horizontal = new DialogGUIBase[3];
-                horizontal[0] = new DialogGUISpace(10);
-                horizontal[1] = new DialogGUILabel(crew.Key, MessageStyle(true));
-                horizontal[2] = new DialogGUIButton("Train", () => TrainKerbal(crew.Value), false);
-                innerElements.Add(new DialogGUIHorizontalLayout(horizontal));
+                horizontal = new DialogGUIBase[4];
+                horizontal[0] = new DialogGUISpace(30);
+                horizontal[1] = new DialogGUILabel(crew.Key, MessageStyle(true, true), true);
+                
+                var buttonGuiSlot = new DialogGUIBase[2];
+                buttonGuiSlot[0] = new DialogGUISpace(1);
+                buttonGuiSlot[1] = new DialogGUIButton("Train", () => TrainKerbal(crew.Value), 70, 24, false);
+
+                horizontal[2] = new DialogGUIVerticalLayout(buttonGuiSlot);
+                horizontal[3] = new DialogGUISpace(40);
+                var horizontalGroupCrew = new DialogGUIHorizontalLayout(horizontal) { anchor = TextAnchor.MiddleLeft };
+                innerElements.Add(horizontalGroupCrew);
             }
             DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
             dialogElements.Add(new DialogGUIScrollList(new Vector2(300, 300), false, true, vertical));
-            dialogElements.Add(GetBoxes("crew"));
-            return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new MultiOptionDialog("Bureaucracy", "", "Bureaucracy: Crew Manager", UISkinManager.GetSkin("MainMenuSkin"),
-                    new Rect(0.5f, 0.5f, 350, 265), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"), false);
+
+            
+            DialogGUIBase[] buttons = new DialogGUIBase[2];
+            buttons[0] = GetTopBoxes("crew", false);
+            buttons[1] = GetBottomBoxes("crew", false);
+            dialogElements.Add(new DialogGUIVerticalLayout(buttons));
+            
+            var multiOptDialog = new MultiOptionDialog("BureaucracyCrew", "", "Bureaucracy: Crew Manager", UISkinManager.GetSkin("MainMenuSkin"), GetRect(dialogElements), dialogElements.ToArray());
+            var popup = PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), multiOptDialog, false, UISkinManager.GetSkin("MainMenuSkin"), false);
+            return popup;
         }
-        
+
         private void TrainKerbal(CrewMember crewMember)
         {
             int newLevel = crewMember.CrewReference().experienceLevel + 1;
@@ -147,24 +161,32 @@ namespace Bureaucracy
             padding = 0;
             List<DialogGUIBase> dialogElements = new List<DialogGUIBase>();
             List<DialogGUIBase> innerElements = new List<DialogGUIBase>();
+            innerElements.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.MinSize, true));
+            innerElements.Add(new DialogGUISpace(10));
+            
             DialogGUIBase[] horizontalArray = new DialogGUIBase[4];
             horizontalArray[0] = new DialogGUISpace(10);
-            horizontalArray[1] = new DialogGUILabel("Budget", MessageStyle(true));
-            horizontalArray[2] = new DialogGUISpace(70);
-            horizontalArray[3] = new DialogGUITextInput(GetAllocation(BudgetManager.Instance).ToString(), false, 3, s => SetAllocation("Budget", s), 40.0f, 30.0f);
-            innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+            horizontalArray[1] = new DialogGUILabel("Budget", MessageStyle(true, true), true);            
+            horizontalArray[2] = new DialogGUITextInput(GetAllocation(BudgetManager.Instance).ToString(), false, 3, s => SetAllocation("Budget", s), 40.0f, 30.0f);
+            horizontalArray[3] = new DialogGUISpace(140);
+            innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray) { anchor = TextAnchor.MiddleLeft } );
+            
             horizontalArray = new DialogGUIBase[4];
             horizontalArray[0] = new DialogGUISpace(10);
-            horizontalArray[1] = new DialogGUILabel("Construction", MessageStyle(true));
-            horizontalArray[2] = new DialogGUISpace(10);
-            horizontalArray[3] = new DialogGUITextInput(GetAllocation(FacilityManager.Instance).ToString(), false, 3, s => SetAllocation("Construction", s), 40.0f, 30.0f);
-            innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+            horizontalArray[1] = new DialogGUILabel("Construction", MessageStyle(true, true), true);
+            horizontalArray[2] = new DialogGUITextInput(GetAllocation(FacilityManager.Instance).ToString(), false, 3, s => SetAllocation("Construction", s), 40.0f, 30.0f);
+            horizontalArray[3] = new DialogGUISpace(140);            
+            innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray) { anchor = TextAnchor.MiddleLeft });
+            
             horizontalArray = new DialogGUIBase[4];
             horizontalArray[0] = new DialogGUISpace(10);
-            horizontalArray[1] = new DialogGUILabel("Research", MessageStyle(true));
-            horizontalArray[2] = new DialogGUISpace(45);
-            horizontalArray[3] = new DialogGUITextInput(GetAllocation(ResearchManager.Instance).ToString(), false, 3, s => SetAllocation("Research", s), 40.0f, 30.0f);
-            innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+            horizontalArray[1] = new DialogGUILabel("Research", MessageStyle(true, true), true);
+            horizontalArray[2] = new DialogGUITextInput(GetAllocation(ResearchManager.Instance).ToString(), false, 3, s => SetAllocation("Research", s), 40.0f, 30.0f);
+            horizontalArray[3] = new DialogGUISpace(140);            
+            innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray) { anchor = TextAnchor.MiddleLeft });
+            
+            innerElements.Add(new DialogGUISpace(15));
+
             for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
             {
                 Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
@@ -181,10 +203,15 @@ namespace Bureaucracy
             horizontalArray[1] = new DialogGUIButton("Load Settings", () => SettingsClass.Instance.InGameLoad(), false); 
             innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
             DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
-            dialogElements.Add(new DialogGUIScrollList(-Vector2.one, false, false, vertical));
-            dialogElements.Add(GetBoxes("allocation"));
+            dialogElements.Add(new DialogGUIScrollList(new Vector2(300, 300), false, true, vertical));
+
+            DialogGUIBase[] buttons = new DialogGUIBase[2];
+            buttons[0] = GetTopBoxes("allocation", false);
+            buttons[1] = GetBottomBoxes("allocation", false);
+            dialogElements.Add(new DialogGUIVerticalLayout(350, 0, buttons));
+
             return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new MultiOptionDialog("Bureaucracy", "", "Bureaucracy: Budget Allocation", UISkinManager.GetSkin("MainMenuSkin"),
+                new MultiOptionDialog("BureaucracyBudgetAllocation", "", "Bureaucracy: Budget Allocation", UISkinManager.GetSkin("MainMenuSkin"),
                     GetRect(dialogElements), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"), false);
         }
 
@@ -225,8 +252,8 @@ namespace Bureaucracy
         {
             padding = 0;
             List<DialogGUIBase> dialogElements = new List<DialogGUIBase>();
-            List<DialogGUIBase> innerElements = new List<DialogGUIBase>();
-            if(HighLogic.CurrentGame.Mode != Game.Modes.CAREER)  innerElements.Add(new DialogGUILabel("Bureaucracy is only available in Career Games"));
+            List<DialogGUIBase> innerElements = new List<DialogGUIBase>();            
+            if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER)  innerElements.Add(new DialogGUILabel("Bureaucracy is only available in Career Games"));
             else
             {
                 innerElements.Add(new DialogGUISpace(10));
@@ -255,8 +282,14 @@ namespace Bureaucracy
                 horizontal[3] = new DialogGUILabel("Construction: "+GetAllocation(FacilityManager.Instance)+"%");
                 horizontal[4] = new DialogGUILabel("|");
                 horizontal[5] = new DialogGUILabel("Research: "+GetAllocation(ResearchManager.Instance)+"%");
+                
+
                 dialogElements.Add(new DialogGUIHorizontalLayout(horizontal));
-                dialogElements.Add(GetBoxes("main"));
+
+                DialogGUIBase[] buttons = new DialogGUIBase[2];
+                buttons[0] = GetTopBoxes("main");
+                buttons[1] = GetBottomBoxes("main");
+                dialogElements.Add(new DialogGUIVerticalLayout(350, 0, buttons));
             }
             return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new MultiOptionDialog("BureaucracyMain", "", "Bureaucracy: Budget", UISkinManager.GetSkin("MainMenuSkin"),
@@ -265,7 +298,7 @@ namespace Bureaucracy
 
         private Rect GetRect(List<DialogGUIBase> dialogElements)
         {
-            return new Rect(0.5f, 0.5f, 300, 265) {height = 150 + 50 * dialogElements.Count, width = Math.Max(padding, 280)};
+            return new Rect(0.5f, 0.5f, 390, 265) {height = 150 + 50 * dialogElements.Count, width = Math.Max(padding, 370)};
         }
 
         private DialogGUIBase[] PaddedLabel(string stringToPad, bool largePrint)
@@ -282,14 +315,14 @@ namespace Bureaucracy
             if (stringToEvaluate.Length *PadFactor > padding) padding = stringToEvaluate.Length * PadFactor;
         }
 
-        private UIStyle MessageStyle(bool largePrint)
+        private UIStyle MessageStyle(bool largePrint, bool crewMessage = false)
         {
             UIStyle style = new UIStyle
             {
                 fontSize = 12,
                 fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.LowerCenter,
-                stretchWidth = false,
+                alignment = crewMessage ? TextAnchor.LowerLeft :  TextAnchor.LowerCenter,
+                stretchWidth = crewMessage ? false : true,
                 normal = new UIStyleState
                 {
                     textColor = new Color(0.89f, 0.86f, 0.72f)
@@ -338,8 +371,13 @@ namespace Bureaucracy
             horizontal[1] = new DialogGUILabel("|");
             horizontal[2] = new DialogGUILabel("Chance of Fire: "+Math.Round(FacilityManager.Instance.FireChance*100, 0)+"%");
             dialogElements.Add(new DialogGUIHorizontalLayout(horizontal));
-            dialogElements.Add(GetBoxes("facility"));
-            return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new MultiOptionDialog("FacilitiesDialog", "", "Bureaucracy: Facilities", UISkinManager.GetSkin("MainMenuSkin"), new Rect(0.5f, 0.5f, 320, 350), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"));
+
+            DialogGUIBase[] buttons = new DialogGUIBase[2];
+            buttons[0] = GetTopBoxes("facility");
+            buttons[1] = GetBottomBoxes("facility");
+            dialogElements.Add(new DialogGUIVerticalLayout(350, 0, buttons));
+
+            return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new MultiOptionDialog("BureaucracyFacilities", "", "Bureaucracy: Facilities", UISkinManager.GetSkin("MainMenuSkin"), new Rect(0.5f, 0.5f, 320, 350), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"));
         }
 
         private PopupDialog DrawResearchUi()
@@ -366,14 +404,19 @@ namespace Bureaucracy
             double scienceOutput = ResearchManager.Instance.ThisMonthsBudget / SettingsClass.Instance.ScienceMultiplier * ResearchManager.Instance.ScienceMultiplier;
             horizontal[2] = new DialogGUILabel("Research Output: "+Math.Round(scienceOutput, 1));
             dialogElements.Add(new DialogGUIHorizontalLayout(horizontal));
-            dialogElements.Add(GetBoxes("research"));
-            return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new MultiOptionDialog("ResearchDialog", "", "Bureaucracy: Research", UISkinManager.GetSkin("MainMenuSkin"), GetRect(dialogElements), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"));
+
+            DialogGUIBase[] buttons = new DialogGUIBase[2];
+            buttons[0] = GetTopBoxes("research");
+            buttons[1] = GetBottomBoxes("research");
+            dialogElements.Add(new DialogGUIVerticalLayout(350, 0, buttons));
+
+            return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new MultiOptionDialog("BureaucracyResearch", "", "Bureaucracy: Research", UISkinManager.GetSkin("MainMenuSkin"), GetRect(dialogElements), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"));
         }
 
-        private DialogGUIHorizontalLayout GetBoxes(string passingUi)
+        private DialogGUIHorizontalLayout GetTopBoxes(string passingUi, bool allocations = true)
         {
             int arrayPointer = 0;
-            DialogGUIBase[] horizontal = new DialogGUIBase[5];
+            DialogGUIBase[] horizontal = new DialogGUIBase[allocations ? 2 : 3];
             if (passingUi != "main")
             {
                 horizontal[arrayPointer] = new DialogGUIButton("Budget", ()=> ActivateUi("main"));
@@ -388,7 +431,15 @@ namespace Bureaucracy
             {
              horizontal[arrayPointer] = new DialogGUIButton("Research", () => ActivateUi("research"));
              arrayPointer++;
-            }
+            }            
+
+            return new DialogGUIHorizontalLayout(280, 30, horizontal) { stretchWidth = true };
+        }
+
+        private DialogGUIHorizontalLayout GetBottomBoxes(string passingUi, bool allocations = true)
+        {
+            int arrayPointer = 0;
+            DialogGUIBase[] horizontal = new DialogGUIBase[allocations ? 3 : 2];
             if (passingUi != "allocation")
             {
                 horizontal[arrayPointer] = new DialogGUIButton("Allocation", () => ActivateUi("allocation"));
@@ -400,7 +451,7 @@ namespace Bureaucracy
                 arrayPointer++;
             }
             horizontal[arrayPointer] = new DialogGUIButton("Close", ValidateAllocations, false);
-            return new DialogGUIHorizontalLayout(280, 35, horizontal);
+            return new DialogGUIHorizontalLayout(280, 30, horizontal) { stretchWidth = true };
         }
 
         public void ValidateAllocations()
