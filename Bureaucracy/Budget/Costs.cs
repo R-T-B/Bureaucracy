@@ -33,6 +33,9 @@ namespace Bureaucracy
         
         public double GetTotalMaintenanceCosts()
         {
+            // if it's a new game, there's no bills or payroll due yet - the space center just opened!
+            if (Utilities.Instance.IsBootstrapBudgetCycle) return 0;
+
             if (!costsDirty)
             {
                 return cachedCosts;
@@ -76,11 +79,16 @@ namespace Bureaucracy
         public double GetFacilityMaintenanceCosts()
         {
             double d = 0;
-            for (int i = 0; i < FacilityManager.Instance.Facilities.Count; i++)
+            
+            // if it's the bootstrap cycle, maintenance costs are zero - facilities just opened, no bills yet!
+            if (!Utilities.Instance.IsBootstrapBudgetCycle)
             {
-                BureaucracyFacility bf = FacilityManager.Instance.Facilities.ElementAt(i);
-                if(bf.IsClosed) continue;
-                d += bf.MaintenanceCost*FacilityManager.Instance.CostMultiplier;
+                for (int i = 0; i < FacilityManager.Instance.Facilities.Count; i++)
+                {
+                    BureaucracyFacility bf = FacilityManager.Instance.Facilities.ElementAt(i);
+                    if (bf.IsClosed) continue;
+                    d += bf.MaintenanceCost * FacilityManager.Instance.CostMultiplier;
+                }
             }
             return d;
         }

@@ -48,6 +48,7 @@ namespace Bureaucracy
             double nextBudgetTime = GetNextBudgetTime();
             if (managerNode != null)
             {
+                bool.TryParse(managerNode.GetValue("IsBootstrapBudgetCycle"), out Utilities.Instance.IsBootstrapBudgetCycle);
                 float.TryParse(managerNode.GetValue("FundingAllocation"), out FundingAllocation);
                 double.TryParse(managerNode.GetValue("nextBudget"), out nextBudgetTime);
                 CreateNewBudget(nextBudgetTime);
@@ -87,8 +88,9 @@ namespace Bureaucracy
         {
             Debug.Log("[Bureaucracy]: Budget Manager: OnSave");
             ConfigNode managerNode = new ConfigNode("BUDGET_MANAGER");
+            managerNode.SetValue("IsBootstrapBudgetCycle", Utilities.Instance.IsBootstrapBudgetCycle, true);
             managerNode.SetValue("FundingAllocation", FundingAllocation, true);
-            managerNode.SetValue("nextBudget", NextBudget.CompletionTime, true);
+            if (NextBudget != null) managerNode.SetValue("nextBudget", NextBudget.CompletionTime, true);
             cn.AddNode(managerNode);
             Costs.Instance.OnSave(managerNode);
             Debug.Log("[Bureaucracy]: Budget Manager: OnSave Complete");
@@ -97,6 +99,13 @@ namespace Bureaucracy
         public void CreateNewBudget(double budgetTime = 0)
         {
             NextBudget = new BudgetEvent(budgetTime == 0 ? GetNextBudgetTime(): budgetTime, this, NeedNewKacAlarm());
+        }
+
+        // called only for a new game save to fire bootstrap budget cycle.
+        public void CreateBootstrapBudget(double budgetTime = 0)
+        {
+            Utilities.Instance.IsBootstrapBudgetCycle = true;
+            NextBudget = new BudgetEvent(0, this, false);
         }
     }
 }
