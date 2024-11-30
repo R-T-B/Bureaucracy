@@ -21,11 +21,19 @@ namespace Bureaucracy
 
         public override void OnEventCompleted()
         {
+            // if this is not the bootstrap budget cycle, then undo the flag
+            if (CompletionTime > 0)
+                Utilities.Instance.IsBootstrapBudgetCycle = false;
+            
             Debug.Log("Bureaucracy]: OnBudgetAboutToFire");
             //Allows other Managers to do pre-budget work, as once the budget is done alot of stuff gets reset.
             InternalListeners.OnBudgetAboutToFire.Fire();
             RepDecay repDecay = new RepDecay();
             repDecay.ApplyHardMode();
+
+            // save Initial funds value for processing bootstrap cycle
+            if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
+
             double funding = Utilities.Instance.GetNetBudget("Budget");
             funding -= CrewManager.Instance.Bonuses(funding, true);
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
@@ -38,8 +46,13 @@ namespace Bureaucracy
                 Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt);
             }
             CrewManager.Instance.ProcessUnhappyCrew();
+
+            // if running bootstrap cycle, zero current funds before awarding initial surplus from calculations
+            if (Utilities.Instance.IsBootstrapBudgetCycle)
+                Funding.Instance.SetFunds(0, TransactionReasons.None);
+
             if(SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
-            if(!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d) Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
+            if(!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle) Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
             Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding "+funding+" Costs: "+facilityDebt);
             InternalListeners.OnBudgetAwarded.Fire(funding, facilityDebt);
             Costs.Instance.ResetLaunchCosts();

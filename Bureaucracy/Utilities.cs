@@ -9,7 +9,9 @@ namespace Bureaucracy
     public class Utilities
     {
         public static Utilities Instance;
-        public readonly Random Randomise = new Random();  
+        public readonly Random Randomise = new Random();
+        public double InitialFunds;         // for processing of initial cycle
+        public bool IsBootstrapBudgetCycle;     // master flag to control behavior of cycle processing.
 
         public Utilities()
         {
@@ -41,6 +43,10 @@ namespace Bureaucracy
         }
         public double GetGrossBudget()
         {
+            // if it's the bootstrap cycle, don't calculate budget based on reputation
+            // instead, gross budget is the current (initial) funds of the game save
+            if (IsBootstrapBudgetCycle) return InitialFunds;
+
             return Math.Round(Reputation.Instance.reputation * SettingsClass.Instance.BudgetMultiplier, 0);
         }
 

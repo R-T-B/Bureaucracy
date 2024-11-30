@@ -211,7 +211,8 @@ namespace Bureaucracy
 
         public void NewGameBudget()
         {
-            BudgetManager.Instance.CreateNewBudget();
+            // calling the proper method
+            BudgetManager.Instance.CreateBootstrapBudget();
         }
         private static int counter;
     }
