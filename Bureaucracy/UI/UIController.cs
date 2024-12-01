@@ -221,7 +221,7 @@ namespace Bureaucracy
 
         private string ShowFunding(Manager manager)
         {
-            return Utilities.Instance.FundsSymbol + Math.Round(Utilities.Instance.GetNetBudget(manager.Name),0).ToString(CultureInfo.CurrentCulture);
+            return Utilities.Instance.FundsSymbol + Math.Round(Utilities.Instance.GetNetBudget(manager.Name),0).ToString("N0", CultureInfo.CurrentCulture);
         }
 
         private string SetAllocation(string managerName, string passedString)
@@ -267,20 +267,20 @@ namespace Bureaucracy
             {
                 innerElements.Add(new DialogGUISpace(10));
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Next Budget: " + Utilities.Instance.ConvertUtToKspTimeStamp(BudgetManager.Instance.NextBudget.CompletionTime), false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Gross Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetGrossBudget()}", false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Wage Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetWageCosts()}", false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Facility Maintenance Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetFacilityMaintenanceCosts()}", false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Launch Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetLaunchCosts()}", false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Mission Bonuses: {Utilities.Instance.FundsSymbol}{GetBonusesToPay()}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Gross Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetGrossBudget().ToString("N0", CultureInfo.CurrentCulture)}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Wage Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetWageCosts().ToString("N0", CultureInfo.CurrentCulture)}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Facility Maintenance Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetFacilityMaintenanceCosts().ToString("N0", CultureInfo.CurrentCulture)}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Launch Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetLaunchCosts().ToString("N0", CultureInfo.CurrentCulture)}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Mission Bonuses: {Utilities.Instance.FundsSymbol}{GetBonusesToPay().ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
                 {
                     Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
                     if (m.Name == "Budget") continue;
                     double departmentFunding = Math.Round(Utilities.Instance.GetNetBudget(m.Name), 0);
                     if (departmentFunding < 0.0f) continue;
-                    innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: " + Utilities.Instance.FundsSymbol + departmentFunding, false)));
+                    innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
                 }
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetNetBudget("Budget")}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetNetBudget("Budget").ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
                 vertical.AddChild(new DialogGUIContentSizer(widthMode: ContentSizeFitter.FitMode.Unconstrained, heightMode: ContentSizeFitter.FitMode.MinSize));
                 dialogElements.Add(new DialogGUIScrollList(new Vector2(300, 300), false, true, vertical));
@@ -368,7 +368,7 @@ namespace Bureaucracy
             innerElements.Add(new DialogGUISpace(10));
             float investmentNeeded = 0;
             innerElements.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
-            innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"This Month's Budget: {Utilities.Instance.FundsSymbol}{Math.Round(FacilityManager.Instance.ThisMonthsBudget, 0)}", false)));
+            innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"This Month's Budget: {Utilities.Instance.FundsSymbol}{Math.Round(FacilityManager.Instance.ThisMonthsBudget, 0).ToString("N0", CultureInfo.CurrentCulture)}", false)));
             for (int i = 0; i < FacilityManager.Instance.Facilities.Count; i++)
             {
                 BureaucracyFacility bf = FacilityManager.Instance.Facilities.ElementAt(i);
@@ -383,7 +383,7 @@ namespace Bureaucracy
             DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
             dialogElements.Add(new DialogGUIScrollList(new Vector2(300, 300), false, true, vertical));
             DialogGUIBase[] horizontal = new DialogGUIBase[3];
-            horizontal[0] = new DialogGUILabel($"Total Investment Needed: {Utilities.Instance.FundsSymbol}{investmentNeeded}");
+            horizontal[0] = new DialogGUILabel($"Total Investment Needed: {Utilities.Instance.FundsSymbol}{investmentNeeded.ToString("N0", CultureInfo.CurrentCulture)}");
             horizontal[1] = new DialogGUILabel("|");
             horizontal[2] = new DialogGUILabel("Chance of Fire: "+Math.Round(FacilityManager.Instance.FireChance*100, 0)+"%");
             dialogElements.Add(new DialogGUIHorizontalLayout(horizontal));

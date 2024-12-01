@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 using Upgradeables;
 
@@ -149,7 +149,7 @@ namespace Bureaucracy
         {
             // ReSharper disable once BuiltInTypeReferenceStyleForMemberAccess
             if (!Upgrading && !recentlyUpgraded) return String.Empty;
-            if (!recentlyUpgraded) return Name + ": " + Utilities.Instance.FundsSymbol + (upgrade.OriginalCost-upgrade.RemainingInvestment) + " / " + upgrade.OriginalCost;
+            if (!recentlyUpgraded) return Name + ": " + Utilities.Instance.FundsSymbol + (upgrade.OriginalCost-upgrade.RemainingInvestment).ToString("N0", CultureInfo.CurrentCulture) + " / " + Utilities.Instance.FundsSymbol + upgrade.OriginalCost.ToString("N0", CultureInfo.CurrentCulture);
             recentlyUpgraded = false;
             return Name + ": Upgrade completed successfully";
         }
