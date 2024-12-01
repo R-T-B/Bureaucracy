@@ -26,7 +26,9 @@ namespace Bureaucracy
                 ReportBuilder.AppendLine(se.UiName + ": " + Math.Round(processedScience, 1) + "/" + Math.Round(se.OriginalScience, 1));
             }
             ResearchManager.Instance.CompletedEvents.Clear();
-            return ReportBuilder.ToString();
+            string report = ReportBuilder.ToString();
+            if (String.IsNullOrEmpty(report)) report = "No Research updates to report";
+            return report;
         }
     }
 }

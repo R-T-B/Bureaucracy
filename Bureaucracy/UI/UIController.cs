@@ -1,7 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 using KSP.UI.Screens;
 using UnityEngine;
@@ -30,6 +32,8 @@ namespace Bureaucracy
         private PopupDialog researchWindow;
         public PopupDialog allocationWindow;
         public PopupDialog crewWindow;
+        public PopupDialog cycleReportWindow;
+
         [UsedImplicitly] public PopupDialog errorWindow;
         private int padding;
         private const int PadFactor = 10;
@@ -217,7 +221,7 @@ namespace Bureaucracy
 
         private string ShowFunding(Manager manager)
         {
-            return "$"+Math.Round(Utilities.Instance.GetNetBudget(manager.Name),0).ToString(CultureInfo.CurrentCulture);
+            return Utilities.Instance.FundsSymbol + Math.Round(Utilities.Instance.GetNetBudget(manager.Name),0).ToString(CultureInfo.CurrentCulture);
         }
 
         private string SetAllocation(string managerName, string passedString)
@@ -248,6 +252,11 @@ namespace Bureaucracy
             if(crewWindow != null) crewWindow.Dismiss();
         }
 
+        private void DismissCycleReport()
+        {
+            cycleReportWindow.Dismiss();
+        }
+
         private PopupDialog DrawMainUi()
         {
             padding = 0;
@@ -258,20 +267,20 @@ namespace Bureaucracy
             {
                 innerElements.Add(new DialogGUISpace(10));
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Next Budget: " + Utilities.Instance.ConvertUtToKspTimeStamp(BudgetManager.Instance.NextBudget.CompletionTime), false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Gross Budget: $" + Utilities.Instance.GetGrossBudget(), false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Wage Costs: $" + Costs.Instance.GetWageCosts(), false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Facility Maintenance Costs: $" + Costs.Instance.GetFacilityMaintenanceCosts(), false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Launch Costs: $"+Costs.Instance.GetLaunchCosts(), false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Mission Bonuses: $" + GetBonusesToPay(), false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Gross Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetGrossBudget()}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Wage Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetWageCosts()}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Facility Maintenance Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetFacilityMaintenanceCosts()}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Launch Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetLaunchCosts()}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Mission Bonuses: {Utilities.Instance.FundsSymbol}{GetBonusesToPay()}", false)));
                 for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
                 {
                     Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
                     if (m.Name == "Budget") continue;
                     double departmentFunding = Math.Round(Utilities.Instance.GetNetBudget(m.Name), 0);
                     if (departmentFunding < 0.0f) continue;
-                    innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: $" + departmentFunding, false)));
+                    innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: " + Utilities.Instance.FundsSymbol + departmentFunding, false)));
                 }
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Net Budget: $"+Utilities.Instance.GetNetBudget("Budget"), false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetNetBudget("Budget")}", false)));
                 DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
                 vertical.AddChild(new DialogGUIContentSizer(widthMode: ContentSizeFitter.FitMode.Unconstrained, heightMode: ContentSizeFitter.FitMode.MinSize));
                 dialogElements.Add(new DialogGUIScrollList(new Vector2(300, 300), false, true, vertical));
@@ -289,7 +298,7 @@ namespace Bureaucracy
                 DialogGUIBase[] buttons = new DialogGUIBase[2];
                 buttons[0] = GetTopBoxes("main");
                 buttons[1] = GetBottomBoxes("main");
-                dialogElements.Add(new DialogGUIVerticalLayout(350, 0, buttons));
+                dialogElements.Add(new DialogGUIVerticalLayout(300, 0, buttons));
             }
             return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new MultiOptionDialog("BureaucracyMain", "", "Bureaucracy: Budget", UISkinManager.GetSkin("MainMenuSkin"),
@@ -298,7 +307,13 @@ namespace Bureaucracy
 
         private Rect GetRect(List<DialogGUIBase> dialogElements)
         {
-            return new Rect(0.5f, 0.5f, 390, 265) {height = 150 + 50 * dialogElements.Count, width = Math.Max(padding, 370)};
+            return new Rect(0.5f, 0.5f, 350, 265) {height = 150 + 50 * dialogElements.Count, width = Math.Max(padding, 320)};
+        }
+
+        // Cycle Report is a bit wider than other windows to accomodate research labels
+        private Rect GetCycleReportRect(List<DialogGUIBase> dialogElements)
+        {
+            return new Rect(0.5f, 0.5f, 410, 265) { height = 150 + 50 * dialogElements.Count, width = Math.Max(padding, 370) };
         }
 
         private DialogGUIBase[] PaddedLabel(string stringToPad, bool largePrint)
@@ -320,6 +335,7 @@ namespace Bureaucracy
             UIStyle style = new UIStyle
             {
                 fontSize = 12,
+
                 fontStyle = FontStyle.Bold,
                 alignment = crewMessage ? TextAnchor.LowerLeft :  TextAnchor.LowerCenter,
                 stretchWidth = crewMessage ? false : true,
@@ -352,7 +368,7 @@ namespace Bureaucracy
             innerElements.Add(new DialogGUISpace(10));
             float investmentNeeded = 0;
             innerElements.Add(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
-            innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("This Month's Budget: $"+Math.Round(FacilityManager.Instance.ThisMonthsBudget, 0), false)));
+            innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"This Month's Budget: {Utilities.Instance.FundsSymbol}{Math.Round(FacilityManager.Instance.ThisMonthsBudget, 0)}", false)));
             for (int i = 0; i < FacilityManager.Instance.Facilities.Count; i++)
             {
                 BureaucracyFacility bf = FacilityManager.Instance.Facilities.ElementAt(i);
@@ -367,7 +383,7 @@ namespace Bureaucracy
             DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
             dialogElements.Add(new DialogGUIScrollList(new Vector2(300, 300), false, true, vertical));
             DialogGUIBase[] horizontal = new DialogGUIBase[3];
-            horizontal[0] = new DialogGUILabel("Total Investment Needed: $"+investmentNeeded);
+            horizontal[0] = new DialogGUILabel($"Total Investment Needed: {Utilities.Instance.FundsSymbol}{investmentNeeded}");
             horizontal[1] = new DialogGUILabel("|");
             horizontal[2] = new DialogGUILabel("Chance of Fire: "+Math.Round(FacilityManager.Instance.FireChance*100, 0)+"%");
             dialogElements.Add(new DialogGUIHorizontalLayout(horizontal));
@@ -515,6 +531,69 @@ namespace Bureaucracy
             dialogElements.Add(new DialogGUILabel("It looks like you have Kerbal Construction Time installed. You should not use KCT's Facility Upgrade and Bureaucracy's Facility Upgrade at the same time. Bad things will happen."));
             dialogElements.Add(new DialogGUIButton("OK", () => { }, true));
             return PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new MultiOptionDialog("KCTError", "", "KCT Detected!", UISkinManager.GetSkin("MainMenuSkin"), new Rect(0.5f, 0.5f, 400,100), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"));
+        }
+
+        // budget report window, shown at the end of each budget cycle
+        public PopupDialog BudgetCycleReportWindow(string report)
+        {
+            padding = 0;
+            List<DialogGUIBase> dialogElements = new List<DialogGUIBase>();
+            List<DialogGUIBase> innerElements = new List<DialogGUIBase>();
+            if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) innerElements.Add(new DialogGUILabel("Bureaucracy is only available in Career Games"));
+            else
+            {
+                // display report contents
+                var reportLines = ("\r\n" + report.Replace("\r\n\r\n\r\n", "\r\n\r\n")).Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                innerElements.Add(new DialogGUISpace(7));
+                for (int i = 1; i < reportLines.Length; i++)
+                {
+                    if (String.IsNullOrEmpty(reportLines[i]))
+                    {
+                        innerElements.Add(new DialogGUISpace(15));
+                    }
+                    else
+                    {
+                        innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(reportLines[i], false)));
+                    }
+                }
+
+                DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray()) { anchor = TextAnchor.UpperLeft };
+                vertical.AddChild(new DialogGUIContentSizer(ContentSizeFitter.FitMode.Unconstrained, ContentSizeFitter.FitMode.PreferredSize, true));
+                var contentsScrollList = new DialogGUIScrollList(new Vector2(400, 300), false, true, vertical);
+                dialogElements.Add(contentsScrollList);
+                
+                // allocations footer
+                DialogGUIBase[] horizontal = new DialogGUIBase[7];
+                horizontal[0] = new DialogGUISpace(2);
+                horizontal[1] = new DialogGUILabel("Allocations: ");
+                horizontal[2] = new DialogGUILabel("Funds: " + GetAllocation(BudgetManager.Instance) + "%");
+                horizontal[3] = new DialogGUILabel("|");
+                horizontal[4] = new DialogGUILabel("Construction: " + GetAllocation(FacilityManager.Instance) + "%");
+                horizontal[5] = new DialogGUILabel("|");
+                horizontal[6] = new DialogGUILabel("Research: " + GetAllocation(ResearchManager.Instance) + "%");
+                dialogElements.Add(new DialogGUIHorizontalLayout(horizontal));
+                
+                // close button
+                var closeBbutton = new DialogGUIButton("Close", DismissCycleReport, false);
+                dialogElements.Add(new DialogGUIHorizontalLayout(380, 30, closeBbutton) { stretchWidth = true });
+            }
+            cycleReportWindow = PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+                new MultiOptionDialog("BureaucracyMain", "", 
+                    $"Bureaucracy: Budget Cycle Report - {KSPUtil.PrintDate(Planetarium.GetUniversalTime(), includeTime: false)}", 
+                    UISkinManager.GetSkin("MainMenuSkin"), GetCycleReportRect(dialogElements), dialogElements.ToArray()), false, 
+                    UISkinManager.GetSkin("MainMenuSkin"), false);
+
+            
+            Invoke("SetCycleBudgetScroll", 0.1f);
+            
+
+            return cycleReportWindow;
+        }
+
+        private void SetCycleBudgetScroll()
+        {
+            var contentScrollRect = GameObject.Find("_UIMaster/DialogCanvas/BureaucracyMain dialog handler/UIScrollViewPrefab(Clone)/ScrollList/");
+            contentScrollRect.GetComponent<ScrollRect>().verticalNormalizedPosition = 1f;
         }
 
         private void OnDestroy()

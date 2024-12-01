@@ -1,6 +1,7 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Bureaucracy
@@ -57,11 +58,29 @@ namespace Bureaucracy
             InternalListeners.OnBudgetAwarded.Fire(funding, facilityDebt);
             Costs.Instance.ResetLaunchCosts();
             repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
+            
+
+            //stringbuilder for budget report
+            if (!Utilities.Instance.IsBootstrapBudgetCycle)
+            {
+                StringBuilder reportBuilder = new StringBuilder();
             for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
             {
                 Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
                 m.ThisMonthsBudget = Utilities.Instance.GetNetBudget(m.Name);
+
+                // build cycle report for the manager
+                var r = m.GetReport();
+                reportBuilder.AppendLine(r.ReportTitle.ToUpper().Replace("REPORT", "DETAILS"));
+                reportBuilder.AppendLine("==================================");
+                reportBuilder.AppendLine(r.ReportBody());
+                reportBuilder.AppendLine(String.Empty);
             }
+
+            // show budget cycle window
+            UiController.Instance.BudgetCycleReportWindow(reportBuilder.ToString());
+            }
+            
             InformParent();
         }
         

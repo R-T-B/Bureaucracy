@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -37,8 +37,7 @@ namespace Bureaucracy
 
         public bool Upgrading { get; private set; }
 
-        public int MaintenanceCost => upkeepCost * GetFacilityLevel();
-
+        public int MaintenanceCost => upkeepCost * (GetFacilityLevel() - 1) + (upkeepCost / 3 * 2);
         public string Name { get; }
 
         public BureaucracyFacility(SpaceCenterFacility spf)
@@ -150,7 +149,7 @@ namespace Bureaucracy
         {
             // ReSharper disable once BuiltInTypeReferenceStyleForMemberAccess
             if (!Upgrading && !recentlyUpgraded) return String.Empty;
-            if (!recentlyUpgraded) return Name + ": $" + (upgrade.OriginalCost-upgrade.RemainingInvestment) + " / " + upgrade.OriginalCost;
+            if (!recentlyUpgraded) return Name + ": " + Utilities.Instance.FundsSymbol + (upgrade.OriginalCost-upgrade.RemainingInvestment) + " / " + upgrade.OriginalCost;
             recentlyUpgraded = false;
             return Name + ": Upgrade completed successfully";
         }

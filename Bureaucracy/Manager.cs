@@ -39,6 +39,6 @@ namespace Bureaucracy
 
         public virtual void OnEventCompletedManagerActions(BureaucracyEvent eventCompleted) { }
 
-        protected virtual Report GetReport() { return new Report(); }
+        public virtual Report GetReport() { return new Report(); }
     }
 }
