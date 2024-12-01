@@ -37,7 +37,7 @@ namespace Bureaucracy
 
         public bool Upgrading { get; private set; }
 
-        public int MaintenanceCost => upkeepCost * (GetFacilityLevel() - 1) + (upkeepCost / 3 * 2);
+        public int MaintenanceCost => upkeepCost * (GetFacilityLevel() - 1) + (upkeepCost * 2 / 3);
         public string Name { get; }
 
         public BureaucracyFacility(SpaceCenterFacility spf)

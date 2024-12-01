@@ -12,7 +12,7 @@ namespace Bureaucracy
         public bool HandleKscUpgrades = true;
         public bool HandleScience = true;
         public bool StopTimeWarp = true;
-        public bool UseItOrLoseIt = true;
+        public bool UseItOrLoseIt = false;
         public bool HardMode;
         public bool RepDecayEnabled;
         public bool RandomEventsEnabled = true;
@@ -123,8 +123,8 @@ namespace Bureaucracy
             int.TryParse(cn.GetValue("RndBaseCost"), out RndCost);
             int.TryParse(cn.GetValue("VABBaseCost"), out VabCost);
             int.TryParse(cn.GetValue("ModFacilityBaseCost"), out OtherFacilityCost);
-            int.TryParse(cn.GetValue("BaseLaunchCostSPH"), out SphCost);
-            int.TryParse(cn.GetValue("BaseLaunchCostVAB"), out VabCost);
+            int.TryParse(cn.GetValue("BaseLaunchCostSPH"), out LaunchCostSph);
+            int.TryParse(cn.GetValue("BaseLaunchCostVAB"), out LaunchCostVab);
             int.TryParse(cn.GetValue("CrewBaseWage"), out KerbalBaseWage);
             float.TryParse(cn.GetValue("LongTermMissionBonusPerYear"), out LongTermBonusYears);
             float.TryParse(cn.GetValue("LongTermMissionBonusPerDay"), out LongTermBonusDays);

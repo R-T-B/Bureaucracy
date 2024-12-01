@@ -24,10 +24,15 @@ namespace Bureaucracy
             ReportBuilder.AppendLine($"Net Budget: {Utilities.Instance.FundsSymbol}{Math.Max(0, netBudget)}");
             if (netBudget > 0 && netBudget < Funding.Instance.Funds) ReportBuilder.AppendLine("We can't justify extending your funding");
             // ReSharper disable once InvertIf
-            if (netBudget < 0)
+            if (netBudget + Utilities.Instance.fundsStored < 0)
             {
                 ReportBuilder.AppendLine("The budget didn't fully cover your space programs costs.");
-                ReportBuilder.Append($"A penalty of {Utilities.Instance.FundsSymbol}{Math.Round(netBudget, 0)} will be applied");
+                ReportBuilder.Append($"A budget shortfall of {Utilities.Instance.FundsSymbol}{Math.Round(netBudget + Utilities.Instance.fundsStored, 0)} was experienced.");
+            }
+            else if (netBudget < 0)
+            {
+                ReportBuilder.AppendLine("The budget didn't fully cover your space programs costs, so we used your remaining treasury to pay dues.");
+                ReportBuilder.Append($"This cost {Utilities.Instance.FundsSymbol}{Math.Round(Math.Abs(netBudget), 0)} from our treasury.");
             }
             return ReportBuilder.ToString();
         }

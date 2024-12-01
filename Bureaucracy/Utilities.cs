@@ -13,6 +13,7 @@ namespace Bureaucracy
         public double InitialFunds;         // for processing of initial cycle
         public bool IsBootstrapBudgetCycle;     // master flag to control behavior of cycle processing.
         public string FundsSymbol = "V";
+        public double fundsStored;
 
         public Utilities()
         {
@@ -75,7 +76,7 @@ namespace Bureaucracy
                         if (m == BudgetManager.Instance) continue;
                         allocation -= m.FundingAllocation;
                     }
-                    if (funding < 0.0f) return funding;
+                    if (funding <= 0.0f) return funding;
                     return Math.Round(funding*allocation, 0);
                 }
                 case "Construction":
@@ -114,6 +115,7 @@ namespace Bureaucracy
         
         public void PayWageDebt(double debt)
         {
+            fundsStored = Funding.Instance.Funds;
             debt = Math.Abs(debt);
             debt -= Funding.Instance.Funds;
             if (debt <= 0) return;
@@ -128,16 +130,17 @@ namespace Bureaucracy
             CrewManager.Instance.ProcessUnpaidKerbals(unpaidKerbals);
         }
 
-        public void PayFacilityDebt(double debt, double wageDebt)
+        public void PayFacilityDebt(double facilityDebt, double wageDebt)
         {
+            facilityDebt = Math.Abs(facilityDebt);
             double fundsAvailable = Funding.Instance.Funds - wageDebt;
-            debt -= fundsAvailable;
+            facilityDebt -= fundsAvailable;
             for (int i = 0; i < FacilityManager.Instance.Facilities.Count; i++)
             {
                 BureaucracyFacility bf = FacilityManager.Instance.Facilities.ElementAt(i);
                 bf.CloseFacility();
-                debt += bf.MaintenanceCost;
-                if (debt <= 0) break;
+                facilityDebt += bf.MaintenanceCost;
+                if (facilityDebt <= 0) break;
             }
         }
 

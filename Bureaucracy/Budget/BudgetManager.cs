@@ -55,7 +55,7 @@ namespace Bureaucracy
                 CreateNewBudget(nextBudgetTime);
             }
             else Bureaucracy.Instance.YieldAndCreateBudgetOnNewGame();
-            ConfigNode costsNode = cn.GetNode("COSTS");
+            ConfigNode costsNode = managerNode.GetNode("COSTS");
             Costs.Instance.OnLoad(costsNode);
             Debug.Log("[Bureaucracy]: Budget Manager: OnLoad Complete");
         }

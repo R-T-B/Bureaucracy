@@ -34,47 +34,47 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="FlightTracker">
-      <HintPath>..\..\..\..\Desktop\UABE\FlightTracker.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files\Kerbal Space Program\GameData\FlightTracker\FlightTracker.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
-      <HintPath>H:\KSP1123\KSP_x64_Data\Managed\mscorlib.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration">
-      <HintPath>H:\KSP1123\KSP_x64_Data\Managed\System.Configuration.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\System.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Security">
-      <HintPath>H:\KSP1123\KSP_x64_Data\Managed\System.Security.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\System.Security.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>D:\KSPDebug\KSP_x64_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -122,21 +122,6 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>echo Running debug post-build event...
-
-xcopy /Y "$(TargetDir)$(ProjectName).dll" "D:\KSPDebug\GameData\Bureaucracy\"
-
-if exist "$(TargetDir)$(ProjectName).pdb" (
-    xcopy /Y "$(TargetDir)$(ProjectName).pdb" "D:\KSPDebug\GameData\Bureaucracy\"
-) else (
-    echo Target file does not exist. Skipping copy.
-)
-
-if "$(ConfigurationName)" == "Release" (
-    xcopy /Y "$(TargetDir)$(ProjectName).dll" "D:\SteamLibrary\steamapps\common\Kerbal Space Program\GameData"
-)</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">

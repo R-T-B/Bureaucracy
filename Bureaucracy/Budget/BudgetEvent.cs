@@ -39,9 +39,9 @@ namespace Bureaucracy
             funding -= CrewManager.Instance.Bonuses(funding, true);
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
             double wageDebt = Math.Abs(funding + facilityDebt);
-            if (funding < 0)
+            if (funding <= 0)
             {
-                Debug.Log("[Bureaucracy]: Funding < 0. Paying debts");
+                Debug.Log("[Bureaucracy]: Funding <= 0. Paying debts");
                 //pay wages first then facilities
                 Utilities.Instance.PayWageDebt(wageDebt);
                 Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt);
@@ -56,7 +56,6 @@ namespace Bureaucracy
             if(!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle) Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
             Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding "+funding+" Costs: "+facilityDebt);
             InternalListeners.OnBudgetAwarded.Fire(funding, facilityDebt);
-            Costs.Instance.ResetLaunchCosts();
             repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
             
 
@@ -82,6 +81,7 @@ namespace Bureaucracy
             }
             
             InformParent();
+            Costs.Instance.ResetLaunchCosts();
         }
         
     }

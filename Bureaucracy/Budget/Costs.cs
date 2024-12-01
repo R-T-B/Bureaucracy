@@ -46,9 +46,9 @@ namespace Bureaucracy
             costs += GetFacilityMaintenanceCosts();
             costs += GetWageCosts();
             costs += GetLaunchCosts();
-            cachedCosts = costs;
+            cachedCosts = Math.Round(costs);
             costsDirty = false;
-            Debug.Log("[Bureaucracy]: Cached costs "+costs+". Setting Costs not dirty for next 5 seconds");
+            Debug.Log("[Bureaucracy]: Cached costs " + Math.Round(costs) + ". Setting Costs not dirty for next 5 seconds");
             Bureaucracy.Instance.Invoke(nameof(Bureaucracy.Instance.SetCalcsDirty), 5.0f);
             return Math.Round(costs);
         }
@@ -90,7 +90,6 @@ namespace Bureaucracy
                 for (int i = 0; i < FacilityManager.Instance.Facilities.Count; i++)
                 {
                     BureaucracyFacility bf = FacilityManager.Instance.Facilities.ElementAt(i);
-                    if (bf.IsClosed) continue;
                     d += bf.MaintenanceCost * FacilityManager.Instance.CostMultiplier;
                 }
             }
