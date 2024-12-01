@@ -49,8 +49,11 @@ namespace Bureaucracy
 
         private void Start()
         {
-            GameEvents.onGUIApplicationLauncherReady.Add(AddToolbarButton);
-            GameEvents.onGUIApplicationLauncherUnreadifying.Add(RemoveToolbarButton);
+            //Removing this until it has more purpose.
+
+            //GameEvents.onGUIApplicationLauncherReady.Add(AddToolbarButton);
+            //GameEvents.onGUIApplicationLauncherUnreadifying.Add(RemoveToolbarButton);
+            return;
         }
 
         private void RemoveToolbarButton(GameScenes data)

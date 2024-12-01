@@ -35,6 +35,7 @@ namespace Bureaucracy
                 return;
             }
             Debug.Log("[Bureaucracy]: EventCanFire");
+            TimeWarp.SetRate(0, true, true);
             randomEventBase.OnEventFire();
         }
 

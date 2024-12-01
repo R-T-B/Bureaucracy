@@ -79,9 +79,9 @@ namespace Bureaucracy
                     return Math.Round(funding*allocation, 0);
                 }
                 case "Construction":
-                    return Math.Max(funding * FacilityManager.Instance.FundingAllocation, 0.0f);
+                    return Math.Round(Math.Max(funding * FacilityManager.Instance.FundingAllocation, 0.0f));
                 case "Research":
-                    return Math.Max(funding * ResearchManager.Instance.FundingAllocation, 0.0f);
+                    return Math.Round(Math.Max(funding * ResearchManager.Instance.FundingAllocation, 0.0f));
                 default:
                     return -1.0f;
             }

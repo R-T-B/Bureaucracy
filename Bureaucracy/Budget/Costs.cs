@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -49,7 +50,7 @@ namespace Bureaucracy
             costsDirty = false;
             Debug.Log("[Bureaucracy]: Cached costs "+costs+". Setting Costs not dirty for next 5 seconds");
             Bureaucracy.Instance.Invoke(nameof(Bureaucracy.Instance.SetCalcsDirty), 5.0f);
-            return costs;
+            return Math.Round(costs);
         }
 
         public void SetCalcsDirty()
@@ -76,7 +77,7 @@ namespace Bureaucracy
                 if(c.CrewReference().rosterStatus == ProtoCrewMember.RosterStatus.Dead || c.CrewReference().rosterStatus == ProtoCrewMember.RosterStatus.Missing) continue;
                 wage += c.Wage;
             }
-            return wage;
+            return Math.Round(wage);
         }
 
         public double GetFacilityMaintenanceCosts()
@@ -93,7 +94,7 @@ namespace Bureaucracy
                     d += bf.MaintenanceCost * FacilityManager.Instance.CostMultiplier;
                 }
             }
-            return d;
+            return Math.Round(d);
         }
 
         public void OnLoad(ConfigNode costsNode)
