@@ -65,6 +65,9 @@ namespace Bureaucracy
 
         public double GetWageCosts()
         {
+            // if it's the initial cycle, return 0 (kerbal just been hired!)
+            if (Utilities.Instance.IsBootstrapBudgetCycle) return 0;
+
             List<CrewMember> crew = CrewManager.Instance.Kerbals.Values.ToList();
             double wage = 0;
             for (int i = 0; i < crew.Count; i++)

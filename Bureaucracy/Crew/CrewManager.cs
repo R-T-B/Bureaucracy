@@ -24,7 +24,7 @@ namespace Bureaucracy
             }
         }
 
-        protected override Report GetReport()
+        public override Report GetReport()
         {
             return new CrewReport();
         }

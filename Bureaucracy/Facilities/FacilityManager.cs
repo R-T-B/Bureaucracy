@@ -48,7 +48,7 @@ namespace Bureaucracy
             return Math.Round(Utilities.Instance.GetNetBudget(Name), 0);
         }
 
-        protected override Report GetReport()
+        public override Report GetReport()
         {
             return new FacilityReport();
         }

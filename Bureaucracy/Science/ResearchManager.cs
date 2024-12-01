@@ -41,7 +41,7 @@ namespace Bureaucracy
             RemoveCompletedEvents();
         }
 
-        protected override Report GetReport()
+        public override Report GetReport()
         {
             return new ScienceReport();
         }

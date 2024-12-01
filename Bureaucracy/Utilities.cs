@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Random = System.Random;
@@ -12,6 +12,7 @@ namespace Bureaucracy
         public readonly Random Randomise = new Random();
         public double InitialFunds;         // for processing of initial cycle
         public bool IsBootstrapBudgetCycle;     // master flag to control behavior of cycle processing.
+        public string FundsSymbol = "V";
 
         public Utilities()
         {
