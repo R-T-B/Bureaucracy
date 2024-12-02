@@ -45,7 +45,9 @@ namespace Bureaucracy
             if (IsComplete) return funding;
             float scienceAvailable = (float)funding / SettingsClass.Instance.ScienceMultiplier;
             float originalScienceRemaining = scienceLeftToProcess;
-            scienceLeftToProcess -= scienceAvailable;
+            float scienceAnalyzed = Mathf.Min(scienceAvailable, scienceLeftToProcess);
+            scienceLeftToProcess -= scienceAnalyzed;
+            Utilities.Instance.scienceProcessedCurrentCycle += scienceAnalyzed;
             if (scienceLeftToProcess <= 0.0f)
             {
                 scienceAvailable -= originalScienceRemaining;
