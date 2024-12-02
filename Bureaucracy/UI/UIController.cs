@@ -418,7 +418,7 @@ namespace Bureaucracy
             horizontal[0] = new DialogGUILabel("Processing Science: " + Math.Round(scienceCount, 1));
             horizontal[1] = new DialogGUILabel("|");
             double scienceOutput = ResearchManager.Instance.ThisMonthsBudget / SettingsClass.Instance.ScienceMultiplier * ResearchManager.Instance.ScienceMultiplier;
-            horizontal[2] = new DialogGUILabel("Research Output: "+Math.Round(scienceOutput, 1));
+            horizontal[2] = new DialogGUILabel($"Research Output: { Math.Floor(Utilities.Instance.scienceProcessedCurrentCycle * 10) / 10} / { Math.Round(scienceOutput, 1) }");
             dialogElements.Add(new DialogGUIHorizontalLayout(horizontal));
 
             DialogGUIBase[] buttons = new DialogGUIBase[2];

@@ -57,7 +57,9 @@ namespace Bureaucracy
             Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding "+funding+" Costs: "+facilityDebt);
             InternalListeners.OnBudgetAwarded.Fire(funding, facilityDebt);
             repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
-            
+
+            // reset science processed in the current cycle
+            Utilities.Instance.scienceProcessedCurrentCycle = 0;
 
             //stringbuilder for budget report
             if (!Utilities.Instance.IsBootstrapBudgetCycle)
