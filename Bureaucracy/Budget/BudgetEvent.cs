@@ -59,7 +59,7 @@ namespace Bureaucracy
             repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
 
             // reset science processed in the current cycle
-            Utilities.Instance.scienceProcessedCurrentCycle = 0;
+            Utilities.Instance.ScienceProcessedCurrentCycle = 0;
 
             //stringbuilder for budget report
             if (!Utilities.Instance.IsBootstrapBudgetCycle)

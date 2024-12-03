@@ -47,7 +47,7 @@ namespace Bureaucracy
             float originalScienceRemaining = scienceLeftToProcess;
             float scienceAnalyzed = Mathf.Min(scienceAvailable, scienceLeftToProcess);
             scienceLeftToProcess -= scienceAnalyzed;
-            Utilities.Instance.scienceProcessedCurrentCycle += scienceAnalyzed;
+            Utilities.Instance.ScienceProcessedCurrentCycle += scienceAnalyzed;
             if (scienceLeftToProcess <= 0.0f)
             {
                 scienceAvailable -= originalScienceRemaining;

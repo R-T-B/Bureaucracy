@@ -14,7 +14,7 @@ namespace Bureaucracy
         public bool IsBootstrapBudgetCycle;     // master flag to control behavior of cycle processing.
         public string FundsSymbol = "V";
         public double fundsStored;
-        public double scienceProcessedCurrentCycle = 0;
+        public double ScienceProcessedCurrentCycle = 0;
 
         public Utilities()
         {
