@@ -49,6 +49,7 @@ namespace Bureaucracy
             if (managerNode != null)
             {
                 bool.TryParse(managerNode.GetValue("IsBootstrapBudgetCycle"), out Utilities.Instance.IsBootstrapBudgetCycle);
+                double.TryParse(managerNode.GetValue("ScienceProcessedCurrentCycle"), out Utilities.Instance.ScienceProcessedCurrentCycle);                
                 double.TryParse(managerNode.GetValue("InitialFunds"), out Utilities.Instance.InitialFunds);
                 float.TryParse(managerNode.GetValue("FundingAllocation"), out FundingAllocation);
                 double.TryParse(managerNode.GetValue("nextBudget"), out nextBudgetTime);
@@ -90,6 +91,7 @@ namespace Bureaucracy
             Debug.Log("[Bureaucracy]: Budget Manager: OnSave");
             ConfigNode managerNode = new ConfigNode("BUDGET_MANAGER");
             managerNode.SetValue("IsBootstrapBudgetCycle", Utilities.Instance.IsBootstrapBudgetCycle, true);
+            managerNode.SetValue("ScienceProcessedCurrentCycle", Utilities.Instance.ScienceProcessedCurrentCycle, true);
             managerNode.SetValue("InitialFunds", Utilities.Instance.InitialFunds, true);
             managerNode.SetValue("FundingAllocation", FundingAllocation, true);
             if (NextBudget != null) managerNode.SetValue("nextBudget", NextBudget.CompletionTime, true);
