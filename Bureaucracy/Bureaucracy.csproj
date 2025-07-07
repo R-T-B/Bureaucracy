@@ -40,7 +40,7 @@
       <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="FlightTracker">
-      <HintPath>..\..\..\..\..\..\..\Program Files\Kerbal Space Program\GameData\FlightTracker\FlightTracker.dll</HintPath>
+      <HintPath>C:\Program Files\Kerbal Space Program\GameData\FlightTracker\FlightTracker.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>C:\Program Files\Kerbal Space Program\KSP_x64_Data\Managed\mscorlib.dll</HintPath>
@@ -78,7 +78,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BankOfKerbin.cs" />
     <Compile Include="Budget\BudgetEvent.cs" />
     <Compile Include="Budget\BudgetManager.cs" />
     <Compile Include="Budget\BudgetReport.cs" />

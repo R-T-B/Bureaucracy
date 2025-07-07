@@ -88,16 +88,18 @@ namespace Bureaucracy
         public void ProcessRetirees()
         {
             Debug.Log("[Bureaucracy]: Processing Retirees");
-            for (int i = 0; i < Kerbals.Count; i++)
+            for (int i = 0; i < this.Kerbals.Count; i++)
             {
-                KeyValuePair<string, CrewMember> kvp = Kerbals.ElementAt(i);
-                if (kvp.Value.CrewReference().rosterStatus != ProtoCrewMember.RosterStatus.Available) continue;
-                if (kvp.Value.retirementDate > Planetarium.GetUniversalTime()) continue;
-                Debug.Log("[Bureaucracy]: " + kvp.Value.Name + " has retired");
-                HighLogic.CurrentGame.CrewRoster.Remove(kvp.Value.CrewReference());
-                ScreenMessages.PostScreenMessage("[Bureaucracy]: " + kvp.Key + " has retired");
-                Retirees.Add(kvp.Key);
-                Kerbals.Remove(kvp.Value.Name);
+                KeyValuePair<string, CrewMember> keyValuePair = this.Kerbals.ElementAt(i);
+                if (keyValuePair.Value.CrewReference().rosterStatus == ProtoCrewMember.RosterStatus.Available && keyValuePair.Value.retirementDate <= Planetarium.GetUniversalTime())
+                {
+                    Debug.Log("[Bureaucracy]: " + keyValuePair.Value.Name + " has retired");
+                    ScreenMessages.PostScreenMessage("[Bureaucracy]: " + keyValuePair.Key + " has retired");
+                    this.Retirees.Add(keyValuePair.Key);
+                    this.Kerbals.Remove(keyValuePair.Value.Name);
+                    keyValuePair.Value.CrewReference().ArchiveFlightLog();
+                    keyValuePair.Value.CrewReference().rosterStatus = ProtoCrewMember.RosterStatus.Dead;
+                }
             }
             Debug.Log("[Bureaucracy]: Retirees Processed");
         }

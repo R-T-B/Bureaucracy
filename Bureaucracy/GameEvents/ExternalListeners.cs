@@ -1,10 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
 using Contracts;
-using KSP.UI.Screens;
-using UnityEngine;
 using FlightTracker;
 using JetBrains.Annotations;
+using KSP.UI.Screens;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using UnityEngine;
+using VehiclePhysics;
 
 namespace Bureaucracy
 {
@@ -126,6 +128,16 @@ namespace Bureaucracy
             if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) return;
             //No need to check if the Kerbal hasn't died. Kerbals always go missing before they go dead, so just check for Missing.
             if (statusTo != ProtoCrewMember.RosterStatus.Missing) return;
+            using (List<string>.Enumerator enumerator = CrewManager.Instance.Retirees.GetEnumerator()) //Also this block of code below checks if the missing / dead kerbal is a retiree, in fact.
+            {
+                while (enumerator.MoveNext())
+                {
+                    if (enumerator.Current.Equals(crewMember.name))
+                    {
+                        return;
+                    }
+                }
+            }
             CrewManager.Instance.ProcessDeadKerbal(crewMember);
         }
 
