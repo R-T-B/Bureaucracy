@@ -49,6 +49,7 @@ namespace Bureaucracy
             Debug.Log("[Bureaucracy]: Unregistering Events");
             GameEvents.OnVesselRollout.Remove(AddLaunch);
             GameEvents.Contract.onOffered.Remove(OnContractOffered);
+            GameEvents.Contract.onContractsLoaded.Remove(ProcessContracts);
             GameEvents.onFacilityContextMenuSpawn.Remove(OnFacilityContextMenuSpawn);
             GameEvents.OnScienceRecieved.Remove(OnScienceReceived);
             GameEvents.OnCrewmemberHired.Remove(OnCrewMemberHired);
@@ -82,6 +83,7 @@ namespace Bureaucracy
             if (eventsRegistered) return;
             GameEvents.OnVesselRollout.Add(AddLaunch);
             GameEvents.Contract.onOffered.Add(OnContractOffered);
+            GameEvents.Contract.onContractsLoaded.Add(ProcessContracts);
             GameEvents.onFacilityContextMenuSpawn.Add(OnFacilityContextMenuSpawn);
             GameEvents.OnScienceRecieved.Add(OnScienceReceived);
             GameEvents.OnCrewmemberHired.Add(OnCrewMemberHired);
@@ -195,12 +197,17 @@ namespace Bureaucracy
             if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) return;
             try
             {
-                ContractInterceptor.Instance.OnContractOffered(contract);
+                ContractInterceptor.Instance.ProcessContract(contract);
             }
             catch
             {
                 //wrong game scene but do not die
             }
+        }
+
+        private void ProcessContracts()
+        {
+            StartCoroutine(ContractInterceptor.Instance.ProcessContractList());
         }
 
         private void AddLaunch(ShipConstruct ship)

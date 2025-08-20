@@ -9,14 +9,36 @@ namespace Bureaucracy
     public class ContractInterceptor : MonoBehaviour
     {
         public static ContractInterceptor Instance;
+        public static bool ContractsAlreadyProcessed = false;
 
         protected void Awake()
         {
             DontDestroyOnLoad(this);
             Instance = this;
+            ContractConfiguratorBridge.Initialize();
         }
 
-        public void OnContractOffered(Contract contract)
+        public System.Collections.IEnumerator ProcessContractList()
+        {
+            if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER || ContractsAlreadyProcessed)
+                yield break;
+
+            for (int i = 0; i <= 5; i++)
+                yield return new WaitForEndOfFrame();
+
+            foreach (var contract in ContractSystem.Instance.Contracts)
+                ProcessContract(contract);
+            
+
+            foreach (var contract in ContractConfiguratorBridge.GetActiveContracts())            
+                ProcessContract(contract);
+            
+
+            Debug.Log("[Bureaucracy] Finished processing contracts.");
+            ContractsAlreadyProcessed = true;
+        }
+
+        public void ProcessContract(Contract contract)
         {
             if (!SettingsClass.Instance.ContractInterceptor) return;
             if (contract.FundsCompletion <= 0) return;
