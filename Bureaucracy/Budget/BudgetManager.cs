@@ -49,13 +49,18 @@ namespace Bureaucracy
             if (managerNode != null)
             {
                 bool.TryParse(managerNode.GetValue("IsBootstrapBudgetCycle"), out Utilities.Instance.IsBootstrapBudgetCycle);
-                double.TryParse(managerNode.GetValue("ScienceProcessedCurrentCycle"), out Utilities.Instance.ScienceProcessedCurrentCycle);                
+                double.TryParse(managerNode.GetValue("ScienceProcessedCurrentCycle"), out Utilities.Instance.ScienceProcessedCurrentCycle);
                 double.TryParse(managerNode.GetValue("InitialFunds"), out Utilities.Instance.InitialFunds);
                 float.TryParse(managerNode.GetValue("FundingAllocation"), out FundingAllocation);
                 double.TryParse(managerNode.GetValue("nextBudget"), out nextBudgetTime);
                 CreateNewBudget(nextBudgetTime);
             }
-            else Bureaucracy.Instance.YieldAndCreateBudgetOnNewGame();
+            else
+            {
+                OnSave(cn);
+                managerNode = cn.GetNode("BUDGET_MANAGER");
+                Bureaucracy.Instance.YieldAndCreateBudgetOnNewGame();       
+            }
             ConfigNode costsNode = managerNode.GetNode("COSTS");
             Costs.Instance.OnLoad(costsNode);
             Debug.Log("[Bureaucracy]: Budget Manager: OnLoad Complete");

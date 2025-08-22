@@ -49,17 +49,21 @@ namespace Bureaucracy
             Debug.Log("[Bureaucracy]: Unregistering Events");
             GameEvents.OnVesselRollout.Remove(AddLaunch);
             GameEvents.Contract.onOffered.Remove(OnContractOffered);
-            GameEvents.Contract.onContractsLoaded.Remove(ProcessContracts);
             GameEvents.onFacilityContextMenuSpawn.Remove(OnFacilityContextMenuSpawn);
             GameEvents.OnScienceRecieved.Remove(OnScienceReceived);
             GameEvents.OnCrewmemberHired.Remove(OnCrewMemberHired);
             GameEvents.onKerbalStatusChanged.Remove(PotentialKerbalDeath);
             GameEvents.onGUIAstronautComplexSpawn.Remove(AstronautComplexSpawned);
             GameEvents.onGUIAstronautComplexDespawn.Remove(AstronautComplexDespawned);
-            Debug.Log("[Bureaucracy] Unregistered Stock Events");
+            GameEvents.onGUIMissionControlSpawn.Remove(ContractInterceptor.Instance.ProcessContractList);
+            Debug.Log("[Bureaucracy] Unregistered Stock Events");            
             FlightTrackerApi.OnFlightTrackerUpdated.Remove(HandleRecovery);
             Debug.Log("[Bureaucracy] Unregistered Flight Tracker Event");
-            if (onKerbalismScience == null) return;
+            if (onKerbalismScience == null)
+            {
+                eventsRegistered = false;
+                return;
+            }
             KerbalismApi.UnsuppressKerbalismScience();
             onKerbalismScience.Remove(OnKerbalismScienceReceived);
             eventsRegistered = false;
@@ -68,28 +72,30 @@ namespace Bureaucracy
 
         private void OnGameLoaded(ConfigNode data)
         {
-            if(!ShouldRegisterEvents()) return;
+            ContractInterceptor.ContractsAlreadyProcessed = false;
+            if (!ShouldRegisterEvents()) return;
             RegisterEvents();
         }
 
         private void OnNewGame()
         {
+            ContractInterceptor.ContractsAlreadyProcessed = false;
             if (!ShouldRegisterEvents()) return;
             RegisterEvents();
         }
 
         private void RegisterEvents()
         {
-            if (eventsRegistered) return;
+            if (eventsRegistered) return;            
             GameEvents.OnVesselRollout.Add(AddLaunch);
-            GameEvents.Contract.onOffered.Add(OnContractOffered);
-            GameEvents.Contract.onContractsLoaded.Add(ProcessContracts);
+            GameEvents.Contract.onOffered.Add(OnContractOffered);            
             GameEvents.onFacilityContextMenuSpawn.Add(OnFacilityContextMenuSpawn);
             GameEvents.OnScienceRecieved.Add(OnScienceReceived);
             GameEvents.OnCrewmemberHired.Add(OnCrewMemberHired);
             GameEvents.onKerbalStatusChanged.Add(PotentialKerbalDeath);
             GameEvents.onGUIAstronautComplexSpawn.Add(AstronautComplexSpawned);
             GameEvents.onGUIAstronautComplexDespawn.Add(AstronautComplexDespawned);
+            GameEvents.onGUIMissionControlSpawn.Add(ContractInterceptor.Instance.ProcessContractList);
             Debug.Log("[Bureaucracy]: Stock Events Registered");
             FlightTrackerApi.OnFlightTrackerUpdated.Add(HandleRecovery);
             Debug.Log("[Bureaucracy]: FlightTracker Events Registered");
@@ -107,8 +113,7 @@ namespace Bureaucracy
                     Debug.Log("[Bureaucracy]: Failed to take control of science for Kerbalism");
                     KerbalismApi.UnsuppressKerbalismScience();
                 }
-            }
-
+            }            
             eventsRegistered = true;
             Debug.Log("[Bureaucracy]: All Events Successfully Registered");
         }
@@ -203,11 +208,6 @@ namespace Bureaucracy
             {
                 //wrong game scene but do not die
             }
-        }
-
-        private void ProcessContracts()
-        {
-            StartCoroutine(ContractInterceptor.Instance.ProcessContractList());
         }
 
         private void AddLaunch(ShipConstruct ship)
