@@ -103,6 +103,8 @@
     <Compile Include="KerbalismAPI.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="ManagerProgressEvent.cs" />
+    <Compile Include="BureaucracyParams.cs" />
+    <Compile Include="PartsCostProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomEvents\CurrencyEvent.cs" />
     <Compile Include="RandomEvents\FireEvent.cs" />
