@@ -12,6 +12,7 @@ namespace Bureaucracy
     {
         const int ORIGINAL_CONTROL_PART_COST = 2000;
         private static string controlPartName = "Aerodynamic Nose Cone";
+        private static string controlPartNameSecondary = "AN-12 Aerodynamic Nose Cone";
 
         public static PartsCostProcessor Instance;
         public static int lastCostAdjustment = 100;
@@ -81,6 +82,9 @@ namespace Bureaucracy
         {
             // use a common stock part to determine difference between stock and current cost
             var controlPart = PartLoader.LoadedPartsList.Find(p => p.title.ToUpper() == controlPartName.ToUpper());
+            if (controlPart == null)
+                controlPart = PartLoader.LoadedPartsList.Find(p => p.title.ToUpper() == controlPartNameSecondary.ToUpper());
+            
             var controlPartCost = controlPart.entryCost;
 
             return (int)Math.Floor((float)ORIGINAL_CONTROL_PART_COST / (float)controlPartCost) * 100;
