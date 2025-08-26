@@ -50,6 +50,7 @@ namespace Bureaucracy
             GameEvents.OnVesselRollout.Remove(AddLaunch);
             GameEvents.Contract.onOffered.Remove(OnContractOffered);
             GameEvents.onFacilityContextMenuSpawn.Remove(OnFacilityContextMenuSpawn);
+            GameEvents.onGUIRnDComplexSpawn.Remove(PartsCostProcessor.Instance.ProcessParts);
             GameEvents.OnScienceRecieved.Remove(OnScienceReceived);
             GameEvents.OnCrewmemberHired.Remove(OnCrewMemberHired);
             GameEvents.onKerbalStatusChanged.Remove(PotentialKerbalDeath);
@@ -80,6 +81,7 @@ namespace Bureaucracy
         private void OnNewGame()
         {
             ContractInterceptor.ContractsAlreadyProcessed = false;
+            PartsCostProcessor.lastCostAdjustment = 100;            
             if (!ShouldRegisterEvents()) return;
             RegisterEvents();
         }
@@ -90,6 +92,7 @@ namespace Bureaucracy
             GameEvents.OnVesselRollout.Add(AddLaunch);
             GameEvents.Contract.onOffered.Add(OnContractOffered);            
             GameEvents.onFacilityContextMenuSpawn.Add(OnFacilityContextMenuSpawn);
+            GameEvents.onGUIRnDComplexSpawn.Add(PartsCostProcessor.Instance.ProcessParts);
             GameEvents.OnScienceRecieved.Add(OnScienceReceived);
             GameEvents.OnCrewmemberHired.Add(OnCrewMemberHired);
             GameEvents.onKerbalStatusChanged.Add(PotentialKerbalDeath);

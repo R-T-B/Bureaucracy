@@ -172,21 +172,21 @@ namespace Bureaucracy
             horizontalArray[0] = new DialogGUISpace(10);
             horizontalArray[1] = new DialogGUILabel("Budget", MessageStyle(true, true), true);            
             horizontalArray[2] = new DialogGUITextInput(GetAllocation(BudgetManager.Instance).ToString(), false, 3, s => SetAllocation("Budget", s), 40.0f, 30.0f);
-            horizontalArray[3] = new DialogGUISpace(140);
+            horizontalArray[3] = new DialogGUISpace(100);
             innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray) { anchor = TextAnchor.MiddleLeft } );
             
             horizontalArray = new DialogGUIBase[4];
             horizontalArray[0] = new DialogGUISpace(10);
             horizontalArray[1] = new DialogGUILabel("Construction", MessageStyle(true, true), true);
             horizontalArray[2] = new DialogGUITextInput(GetAllocation(FacilityManager.Instance).ToString(), false, 3, s => SetAllocation("Construction", s), 40.0f, 30.0f);
-            horizontalArray[3] = new DialogGUISpace(140);            
+            horizontalArray[3] = new DialogGUISpace(100);            
             innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray) { anchor = TextAnchor.MiddleLeft });
             
             horizontalArray = new DialogGUIBase[4];
             horizontalArray[0] = new DialogGUISpace(10);
             horizontalArray[1] = new DialogGUILabel("Research", MessageStyle(true, true), true);
             horizontalArray[2] = new DialogGUITextInput(GetAllocation(ResearchManager.Instance).ToString(), false, 3, s => SetAllocation("Research", s), 40.0f, 30.0f);
-            horizontalArray[3] = new DialogGUISpace(140);            
+            horizontalArray[3] = new DialogGUISpace(100);            
             innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray) { anchor = TextAnchor.MiddleLeft });
             
             innerElements.Add(new DialogGUISpace(15));
