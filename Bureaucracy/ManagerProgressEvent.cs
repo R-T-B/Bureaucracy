@@ -52,7 +52,10 @@ namespace Bureaucracy
                 Bureaucracy.Instance.lastProgressUpdate = Planetarium.GetUniversalTime();
                 ManagerProgressEvent.bellTime = double.MinValue;
                 RandomEventLoader.Instance.RollEvent();
-                CrewManager.Instance.ProcessRetirees(); //We do this once a day too, because people don't need to wait a cycle to retire!
+                if (SettingsClass.Instance.RetirementEnabled)
+                {
+                    CrewManager.Instance.ProcessRetirees(); //We do this once a day too, because people don't need to wait a cycle to retire!
+                }
                 return;
             }
         }
