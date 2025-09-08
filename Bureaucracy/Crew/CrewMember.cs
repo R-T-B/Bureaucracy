@@ -160,7 +160,10 @@ namespace Bureaucracy
 
         public void ExtendRetirementAge(double extension)
         {
-            retirementDate += extension;
+            if (extension > 0)
+            {
+                retirementDate += extension;
+            }
         }
     }
 }
