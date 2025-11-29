@@ -106,7 +106,14 @@ namespace Bureaucracy
 
         public void UpdateCrewBonus(ProtoCrewMember crewMember, double launchTime)
         {
-            Kerbals[crewMember.name].AllocateBonus(Planetarium.GetUniversalTime()-launchTime);   
+            try
+            {
+                Kerbals[crewMember.name].AllocateBonus(Planetarium.GetUniversalTime() - launchTime);
+            }
+            catch
+            {
+                //Crewmember retired or died prior to being allocated bonus, no bonus.
+            }
         }
 
         public int Bonuses(double availableFunding, bool clearBonuses)
