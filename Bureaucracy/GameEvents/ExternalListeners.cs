@@ -171,7 +171,6 @@ namespace Bureaucracy
             CrewManager.Instance.UpdateCrewBonus(crewMember, FlightTrackerApi.Instance.GetLaunchTime(crewMember.name));
             if (!SettingsClass.Instance.RetirementEnabled) return;
             CrewManager.Instance.ExtendRetirement(crewMember, FlightTrackerApi.Instance.GetLaunchTime(crewMember.name));
-            CrewManager.Instance.ProcessRetirees();
         }
 
         private void OnScienceReceived(float science, ScienceSubject subject, ProtoVessel protoVessel, bool reverseEngineered)
