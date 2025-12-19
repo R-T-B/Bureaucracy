@@ -11,6 +11,8 @@ namespace Bureaucracy
         public readonly float MonthLength;
         public static double lastCycleStratCost = 0;
         public static float lastCycleStratPercentageAsMult = 0;
+        public static double lastMonthsNetBudget = 0;
+        public static double lastMonthsGrossBudget = 0;
         public BudgetEvent(double budgetTime, BudgetManager manager, bool newKacAlarm)
         {
             MonthLength = SettingsClass.Instance.TimeBetweenBudgets;
@@ -36,8 +38,8 @@ namespace Bureaucracy
 
             // save Initial funds value for processing bootstrap cycle
             if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
-
-            double funding = Utilities.Instance.GetNetBudget("Budget");
+            lastMonthsGrossBudget = Utilities.Instance.GetNetBudget("Budget");
+            double funding = lastMonthsGrossBudget;
             funding -= CrewManager.Instance.Bonuses(funding, true);
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
             double wageDebt = Math.Abs(funding + facilityDebt);
@@ -62,7 +64,8 @@ namespace Bureaucracy
                 double fundsAfter = Funding.Instance.Funds;
                 if (funding >= 0.0)
                 {
-                    BudgetEvent.lastCycleStratCost = funding - (fundsAfter - fundsBefore);
+                    lastMonthsNetBudget = (fundsAfter - fundsBefore);
+                    BudgetEvent.lastCycleStratCost = funding - lastMonthsNetBudget;
                     BudgetEvent.lastCycleStratPercentageAsMult = (float)(BudgetEvent.lastCycleStratCost / funding);
                 }
                 else
