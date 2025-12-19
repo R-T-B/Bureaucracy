@@ -59,11 +59,13 @@ namespace Bureaucracy
             return (int)Math.Round((manager.FundingAllocation*100), 0);
         }
 
-
         public void SetupToolbarButton()
         {
-            //TODO: Rename the icon file
-            if(HighLogic.CurrentGame.Mode == Game.Modes.CAREER) toolbarButton = ApplicationLauncher.Instance.AddModApplication(ToggleUI, ToggleUI, null, null, null, null, ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.FLIGHT, GameDatabase.Instance.GetTexture("Bureaucracy/MainIcon", false));
+            if (HighLogic.CurrentGame.Mode == Game.Modes.CAREER && this.toolbarButton == null)
+            {
+                //TODO: Rename the icon file
+                this.toolbarButton = ApplicationLauncher.Instance.AddModApplication(new Callback(this.ToggleUI), new Callback(this.ToggleUI), null, null, null, null, ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.FLIGHT, GameDatabase.Instance.GetTexture("Bureaucracy/MainIcon", false));
+            }
         }
 
         private void ToggleUI()
