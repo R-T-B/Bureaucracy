@@ -28,8 +28,6 @@ namespace Bureaucracy
             Debug.Log("Bureaucracy]: OnBudgetAboutToFire");
             //Allows other Managers to do pre-budget work, as once the budget is done alot of stuff gets reset.
             InternalListeners.OnBudgetAboutToFire.Fire();
-            RepDecay repDecay = new RepDecay();
-            repDecay.ApplyHardMode();
 
             // save Initial funds value for processing bootstrap cycle
             if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
@@ -99,6 +97,10 @@ namespace Bureaucracy
             
             InformParent();
             Costs.Instance.ResetLaunchCosts();
+
+            //We now apply rep decay and such
+            RepDecay repDecay = new RepDecay();
+            repDecay.ApplyHardMode();
         }
         
     }
