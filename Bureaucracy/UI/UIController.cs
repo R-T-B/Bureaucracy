@@ -170,7 +170,7 @@ namespace Bureaucracy
             
             DialogGUIBase[] horizontalArray = new DialogGUIBase[4];
             horizontalArray[0] = new DialogGUISpace(10);
-            horizontalArray[1] = new DialogGUILabel("Budget", MessageStyle(true, true), true);            
+            horizontalArray[1] = new DialogGUILabel("Funds & Strategy", MessageStyle(true, true), true);            
             horizontalArray[2] = new DialogGUITextInput(GetAllocation(BudgetManager.Instance).ToString(), false, 3, s => SetAllocation("Budget", s), 40.0f, 30.0f);
             horizontalArray[3] = new DialogGUISpace(100);
             innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray) { anchor = TextAnchor.MiddleLeft } );
@@ -195,12 +195,30 @@ namespace Bureaucracy
             {
                 Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
-                horizontalArray = new DialogGUIBase[3];
-                horizontalArray[0] = new DialogGUISpace(10);
-                horizontalArray[1] = new DialogGUILabel(m.Name+": ");
-                horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m));
-                innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+                if (!m.Name.Equals("Budget"))
+                {
+                    if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
+                    horizontalArray = new DialogGUIBase[3];
+                    horizontalArray[0] = new DialogGUISpace(10);
+                    horizontalArray[1] = new DialogGUILabel(m.Name + ": ");
+                    horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, false, false));
+                    innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+                }
+                else
+                {
+                    if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
+                    horizontalArray = new DialogGUIBase[3];
+                    horizontalArray[0] = new DialogGUISpace(10);
+                    horizontalArray[1] = new DialogGUILabel("Strategies (Estimate):");
+                    horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, true, true));
+                    innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+                    if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
+                    horizontalArray = new DialogGUIBase[3];
+                    horizontalArray[0] = new DialogGUISpace(10);
+                    horizontalArray[1] = new DialogGUILabel(m.Name + ": ");
+                    horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, true, false));
+                    innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+                }
             }
             horizontalArray = new DialogGUIBase[2];
             horizontalArray[0] = new DialogGUISpace(10);
@@ -219,9 +237,25 @@ namespace Bureaucracy
                     GetRect(dialogElements), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"), false);
         }
 
-        private string ShowFunding(Manager manager)
+        private string ShowFunding(Manager manager, bool isBudget, bool isFirstPhaseOfBudget)
         {
-            return Utilities.Instance.FundsSymbol + Math.Round(Utilities.Instance.GetNetBudget(manager.Name),0).ToString("N0", CultureInfo.CurrentCulture);
+            if (!isBudget)
+            {
+                return Utilities.Instance.FundsSymbol + Math.Round(Utilities.Instance.GetNetBudget(manager.Name), 0).ToString("N0", CultureInfo.CurrentCulture);
+            }
+            else
+            {
+                double netResult = 0;
+                if (isFirstPhaseOfBudget)
+                {
+                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * BudgetEvent.lastCycleStratPercentageAsMult;
+                }
+                else
+                {
+                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * (1 - BudgetEvent.lastCycleStratPercentageAsMult); 
+                }
+                return Utilities.Instance.FundsSymbol + Math.Round(netResult, 0).ToString("N0", CultureInfo.CurrentCulture);
+            }
         }
 
         private string SetAllocation(string managerName, string passedString)
@@ -272,21 +306,25 @@ namespace Bureaucracy
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Facility Maintenance Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetFacilityMaintenanceCosts().ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Launch Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetLaunchCosts().ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Mission Bonuses: {Utilities.Instance.FundsSymbol}{GetBonusesToPay().ToString("N0", CultureInfo.CurrentCulture)}", false)));
+                double departmentFunding = 0;
                 for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
                 {
                     Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
                     if (m.Name == "Budget") continue;
-                    double departmentFunding = Math.Round(Utilities.Instance.GetNetBudget(m.Name), 0);
+                    departmentFunding = Math.Round(Utilities.Instance.GetNetBudget(m.Name), 0);
                     if (departmentFunding < 0.0f) continue;
                     innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
                 }
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetNetBudget("Budget").ToString("N0", CultureInfo.CurrentCulture)}", false)));
+                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * BudgetEvent.lastCycleStratPercentageAsMult;
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Strategy Funding (Estimate): " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
+                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * (1 - BudgetEvent.lastCycleStratPercentageAsMult);
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{departmentFunding.ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
                 vertical.AddChild(new DialogGUIContentSizer(widthMode: ContentSizeFitter.FitMode.Unconstrained, heightMode: ContentSizeFitter.FitMode.MinSize));
                 dialogElements.Add(new DialogGUIScrollList(new Vector2(300, 300), false, true, vertical));
                 DialogGUIBase[] horizontal = new DialogGUIBase[6];
                 horizontal[0] = new DialogGUILabel("Allocations: ");
-                horizontal[1] = new DialogGUILabel("Funds: "+GetAllocation(BudgetManager.Instance)+"%");
+                horizontal[1] = new DialogGUILabel("Funds & Strategy: "+GetAllocation(BudgetManager.Instance)+"%");
                 horizontal[2] = new DialogGUILabel("|");
                 horizontal[3] = new DialogGUILabel("Construction: "+GetAllocation(FacilityManager.Instance)+"%");
                 horizontal[4] = new DialogGUILabel("|");
@@ -566,7 +604,7 @@ namespace Bureaucracy
                 DialogGUIBase[] horizontal = new DialogGUIBase[7];
                 horizontal[0] = new DialogGUISpace(2);
                 horizontal[1] = new DialogGUILabel("Allocations: ");
-                horizontal[2] = new DialogGUILabel("Funds: " + GetAllocation(BudgetManager.Instance) + "%");
+                horizontal[2] = new DialogGUILabel("Funds & Strategy: " + GetAllocation(BudgetManager.Instance) + "%");
                 horizontal[3] = new DialogGUILabel("|");
                 horizontal[4] = new DialogGUILabel("Construction: " + GetAllocation(FacilityManager.Instance) + "%");
                 horizontal[5] = new DialogGUILabel("|");

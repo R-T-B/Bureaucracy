@@ -9,6 +9,8 @@ namespace Bureaucracy
     public class BudgetEvent : BureaucracyEvent
     {
         public readonly float MonthLength;
+        public static double lastCycleStratCost = 0;
+        public static float lastCycleStratPercentageAsMult = 0;
         public BudgetEvent(double budgetTime, BudgetManager manager, bool newKacAlarm)
         {
             MonthLength = SettingsClass.Instance.TimeBetweenBudgets;
@@ -53,7 +55,22 @@ namespace Bureaucracy
                 Funding.Instance.SetFunds(0, TransactionReasons.None);
 
             if(SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
-            if(!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle) Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
+            if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
+            {
+                double fundsBefore = Funding.Instance.Funds;
+                Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
+                double fundsAfter = Funding.Instance.Funds;
+                if (funding >= 0.0)
+                {
+                    BudgetEvent.lastCycleStratCost = funding - (fundsAfter - fundsBefore);
+                    BudgetEvent.lastCycleStratPercentageAsMult = (float)(BudgetEvent.lastCycleStratCost / funding);
+                }
+                else
+                {
+                    BudgetEvent.lastCycleStratCost = funding;
+                    BudgetEvent.lastCycleStratPercentageAsMult = 1f;
+                }
+            }
             Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding "+funding+" Costs: "+facilityDebt);
             InternalListeners.OnBudgetAwarded.Fire(funding, facilityDebt);
             repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
