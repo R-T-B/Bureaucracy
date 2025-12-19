@@ -21,9 +21,9 @@ namespace Bureaucracy
             ReportBuilder.AppendLine($"Mission Bonuses: {Utilities.Instance.FundsSymbol}{CrewManager.Instance.LastBonus}");
             ReportBuilder.AppendLine($"Construction Department: {Utilities.Instance.FundsSymbol}{FacilityManager.Instance.GetAllocatedFunding().ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Research Department: {Utilities.Instance.FundsSymbol}{ResearchManager.Instance.GetAllocatedFunding().ToString("N0", CultureInfo.CurrentCulture)}");
-            double stratCost = BudgetEvent.lastCycleStratCost;
+            double stratCost = BudgetStats.lastCycleStratCost;
             this.ReportBuilder.AppendLine("Strategy Budget: " + Utilities.Instance.FundsSymbol + Math.Max(0.0, stratCost).ToString("N0", CultureInfo.CurrentCulture));
-            double netBudget = Utilities.Instance.GetNetBudget("Budget") - stratCost;
+            double netBudget = BudgetStats.lastMonthsTotalNetBudget;
             ReportBuilder.AppendLine($"Net Budget: {Utilities.Instance.FundsSymbol}{Math.Max(0, netBudget).ToString("N0", CultureInfo.CurrentCulture)}");
             if (netBudget > 0 && netBudget < Funding.Instance.Funds) ReportBuilder.AppendLine("We can't justify extending your funding");
             // ReSharper disable once InvertIf

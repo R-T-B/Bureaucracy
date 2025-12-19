@@ -68,7 +68,11 @@ namespace Bureaucracy
 
         private void ToggleUI()
         {
-            if(UiInactive()) ActivateUi("main");
+            if (UiInactive())
+            {
+				BudgetStats.recalcBudgetFigures();
+				ActivateUi("main");
+			}
             else DismissAllWindows();
         }
 
@@ -248,11 +252,11 @@ namespace Bureaucracy
                 double netResult = 0;
                 if (isFirstPhaseOfBudget)
                 {
-                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * BudgetEvent.lastCycleStratPercentageAsMult;
+                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * BudgetStats.lastCycleStratPercentageAsMult;
                 }
                 else
                 {
-                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * (1 - BudgetEvent.lastCycleStratPercentageAsMult); 
+                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * (1 - BudgetStats.lastCycleStratPercentageAsMult); 
                 }
                 return Utilities.Instance.FundsSymbol + Math.Round(netResult, 0).ToString("N0", CultureInfo.CurrentCulture);
             }
@@ -315,9 +319,9 @@ namespace Bureaucracy
                     if (departmentFunding < 0.0f) continue;
                     innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
                 }
-                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * BudgetEvent.lastCycleStratPercentageAsMult;
+                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * BudgetStats.lastCycleStratPercentageAsMult;
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Strategy Funding (Estimate): " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
-                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * (1 - BudgetEvent.lastCycleStratPercentageAsMult);
+                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * (1 - BudgetStats.lastCycleStratPercentageAsMult);
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{departmentFunding.ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
                 vertical.AddChild(new DialogGUIContentSizer(widthMode: ContentSizeFitter.FitMode.Unconstrained, heightMode: ContentSizeFitter.FitMode.MinSize));

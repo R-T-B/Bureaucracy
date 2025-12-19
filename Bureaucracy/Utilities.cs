@@ -113,25 +113,32 @@ namespace Bureaucracy
             double multiplier = 1 / SettingsClass.Instance.TimeBetweenBudgets;
             return amountToConvert * multiplier;
         }
-        
-        public void PayWageDebt(double debt)
+
+        public void PayWageDebt(double debt, bool simulate)
         {
             fundsStored = Funding.Instance.Funds;
             debt = Math.Abs(debt);
             debt -= Funding.Instance.Funds;
             if (debt <= 0) return;
-            List<CrewMember> unpaidKerbals = new List<CrewMember>();
+            List<CrewMember> unpaidKerbals = null;
             for(int i = 0; i<CrewManager.Instance.Kerbals.Count; i++)
             {
                 CrewMember c = CrewManager.Instance.Kerbals.ElementAt(i).Value;
-                unpaidKerbals.Add(c);
+                if (!simulate)
+                {
+                    unpaidKerbals = new List<CrewMember>();
+                    unpaidKerbals.Add(c);
+                }
                 debt -= c.Wage;
                 if (debt <= 0) break;
             }
-            CrewManager.Instance.ProcessUnpaidKerbals(unpaidKerbals);
+            if (!simulate)
+            {
+                CrewManager.Instance.ProcessUnpaidKerbals(unpaidKerbals);
+            }
         }
 
-        public void PayFacilityDebt(double facilityDebt, double wageDebt)
+        public void PayFacilityDebt(double facilityDebt, double wageDebt, bool simulate)
         {
             facilityDebt = Math.Abs(facilityDebt);
             double fundsAvailable = Funding.Instance.Funds - wageDebt;
@@ -139,7 +146,10 @@ namespace Bureaucracy
             for (int i = 0; i < FacilityManager.Instance.Facilities.Count; i++)
             {
                 BureaucracyFacility bf = FacilityManager.Instance.Facilities.ElementAt(i);
-                bf.CloseFacility();
+                if (!simulate)
+                {
+                    bf.CloseFacility();
+                }
                 facilityDebt += bf.MaintenanceCost;
                 if (facilityDebt <= 0) break;
             }

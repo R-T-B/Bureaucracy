@@ -81,6 +81,7 @@
     <Compile Include="Budget\BudgetEvent.cs" />
     <Compile Include="Budget\BudgetManager.cs" />
     <Compile Include="Budget\BudgetReport.cs" />
+    <Compile Include="Budget\BudgetStats.cs" />
     <Compile Include="Budget\Costs.cs" />
     <Compile Include="Budget\RepDecay.cs" />
     <Compile Include="Bureaucracy.cs" />

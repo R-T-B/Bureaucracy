@@ -1,4 +1,3 @@
-
 using System;
 using System.Linq;
 using System.Text;
@@ -9,10 +8,6 @@ namespace Bureaucracy
     public class BudgetEvent : BureaucracyEvent
     {
         public readonly float MonthLength;
-        public static double lastCycleStratCost = 0;
-        public static float lastCycleStratPercentageAsMult = 0;
-        public static double lastMonthsNetBudget = 0;
-        public static double lastMonthsGrossBudget = 0;
         public BudgetEvent(double budgetTime, BudgetManager manager, bool newKacAlarm)
         {
             MonthLength = SettingsClass.Instance.TimeBetweenBudgets;
@@ -38,8 +33,8 @@ namespace Bureaucracy
 
             // save Initial funds value for processing bootstrap cycle
             if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
-            lastMonthsGrossBudget = Utilities.Instance.GetNetBudget("Budget");
-            double funding = lastMonthsGrossBudget;
+            BudgetStats.lastMonthsTotalNetBudget = Utilities.Instance.GetGrossBudget();
+            double funding = BudgetStats.lastMonthsTotalNetBudget;
             funding -= CrewManager.Instance.Bonuses(funding, true);
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
             double wageDebt = Math.Abs(funding + facilityDebt);
@@ -47,8 +42,8 @@ namespace Bureaucracy
             {
                 Debug.Log("[Bureaucracy]: Funding <= 0. Paying debts");
                 //pay wages first then facilities
-                Utilities.Instance.PayWageDebt(wageDebt);
-                Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt);
+                Utilities.Instance.PayWageDebt(wageDebt, false);
+                Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt, false);
             }
             CrewManager.Instance.ProcessUnhappyCrew();
 
@@ -64,14 +59,14 @@ namespace Bureaucracy
                 double fundsAfter = Funding.Instance.Funds;
                 if (funding >= 0.0)
                 {
-                    lastMonthsNetBudget = (fundsAfter - fundsBefore);
-                    BudgetEvent.lastCycleStratCost = funding - lastMonthsNetBudget;
-                    BudgetEvent.lastCycleStratPercentageAsMult = (float)(BudgetEvent.lastCycleStratCost / funding);
+                    BudgetStats.lastMonthsTotalNetBudget = (fundsAfter - fundsBefore);
+                    BudgetStats.lastCycleStratCost = funding - BudgetStats.lastMonthsTotalNetBudget;
+                    BudgetStats.lastCycleStratPercentageAsMult = (float)(BudgetStats.lastCycleStratCost / funding);
                 }
                 else
                 {
-                    BudgetEvent.lastCycleStratCost = funding;
-                    BudgetEvent.lastCycleStratPercentageAsMult = 1f;
+                    BudgetStats.lastCycleStratCost = funding;
+                    BudgetStats.lastCycleStratPercentageAsMult = 1f;
                 }
             }
             Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding "+funding+" Costs: "+facilityDebt);

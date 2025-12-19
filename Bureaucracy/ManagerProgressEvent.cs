@@ -12,20 +12,20 @@ namespace Bureaucracy
         }
         public void BellCheck()
         {
-            double num = Utilities.LocalSolarTime(FlightGlobals.GetHomeBody());
+            double lst = Utilities.LocalSolarTime(FlightGlobals.GetHomeBody());
             ManagerProgressEvent.solarDayLength = FlightGlobals.GetHomeBody().solarDayLength;
-            if (num > 24.0)
+            if (lst > 24.0)
             {
-                num -= 24.0;
+                lst -= 24.0;
             }
-            else if (num < 0.0)
+            else if (lst < 0.0)
             {
-                num += 24.0;
+                lst += 24.0;
             }
-            num = num / 24.0 * ManagerProgressEvent.solarDayLength;
+            lst = lst / 24.0 * ManagerProgressEvent.solarDayLength;
             if (ManagerProgressEvent.bellTime < 0.0)
             {
-                if (num > ManagerProgressEvent.solarDayLength * 0.1)
+                if (lst > ManagerProgressEvent.solarDayLength * 0.1)
                 {
                     return;
                 }
@@ -41,9 +41,9 @@ namespace Bureaucracy
                 {
                     ManagerProgressEvent.bellTime = (double)this.autoRand.Next((int)ManagerProgressEvent.solarDayLength) + this.autoRand.NextDouble();
                 }
-                while (ManagerProgressEvent.bellTime <= num);
+                while (ManagerProgressEvent.bellTime <= lst);
             }
-            if (ManagerProgressEvent.bellTime <= num)
+            if (ManagerProgressEvent.bellTime <= lst)
             {
                 for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
                 {
