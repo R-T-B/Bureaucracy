@@ -11,6 +11,7 @@ namespace Bureaucracy
 
         public override void OnLoad(ConfigNode node)
         {
+            BudgetStats.recalcBudgetFigures(true);
             Bureaucracy.Instance.OnLoad(node);
         }
     }

@@ -72,7 +72,7 @@ namespace Bureaucracy
         {
             if (UiInactive())
             {
-				BudgetStats.recalcBudgetFigures();
+				BudgetStats.recalcBudgetFigures(false);
 				ActivateUi("main");
 			}
             else DismissAllWindows();
