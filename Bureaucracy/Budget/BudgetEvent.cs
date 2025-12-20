@@ -69,7 +69,6 @@ namespace Bureaucracy
             }
             Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding "+funding+" Costs: "+facilityDebt);
             InternalListeners.OnBudgetAwarded.Fire(funding, facilityDebt);
-            repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
 
             // reset science processed in the current cycle
             Utilities.Instance.ScienceProcessedCurrentCycle = 0;
@@ -100,6 +99,7 @@ namespace Bureaucracy
 
             //We now apply rep decay and such
             RepDecay repDecay = new RepDecay();
+            repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
             repDecay.ApplyHardMode();
         }
         

@@ -196,12 +196,28 @@ namespace Bureaucracy
             innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray) { anchor = TextAnchor.MiddleLeft });
             
             innerElements.Add(new DialogGUISpace(15));
-
+            Manager netIncomeManager = null;
             for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
             {
                 Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (!m.Name.Equals("Budget"))
+                if (m.Name.Equals("Budget"))
+                {
+                    if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
+                    horizontalArray = new DialogGUIBase[3];
+                    horizontalArray[0] = new DialogGUISpace(10);
+                    horizontalArray[1] = new DialogGUILabel("Net Income: ");
+                    horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, false, false));
+                    innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+                    if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
+                    horizontalArray = new DialogGUIBase[3];
+                    horizontalArray[0] = new DialogGUISpace(10);
+                    horizontalArray[1] = new DialogGUILabel("Strategies: ");
+                    horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, true, true));
+                    innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
+                    netIncomeManager = m;
+                }
+                else
                 {
                     if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
                     horizontalArray = new DialogGUIBase[3];
@@ -210,22 +226,12 @@ namespace Bureaucracy
                     horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, false, false));
                     innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
                 }
-                else
-                {
-                    if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
-                    horizontalArray = new DialogGUIBase[3];
-                    horizontalArray[0] = new DialogGUISpace(10);
-                    horizontalArray[1] = new DialogGUILabel("Strategies (Estimate):");
-                    horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, true, true));
-                    innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
-                    if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
-                    horizontalArray = new DialogGUIBase[3];
-                    horizontalArray[0] = new DialogGUISpace(10);
-                    horizontalArray[1] = new DialogGUILabel(m.Name + ": ");
-                    horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, true, false));
-                    innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
-                }
             }
+            horizontalArray = new DialogGUIBase[3];
+            horizontalArray[0] = new DialogGUISpace(10);
+            horizontalArray[1] = new DialogGUILabel("General Funds: ");
+            horizontalArray[2] = new DialogGUILabel(() => ShowFunding(netIncomeManager, true, false));
+            innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
             horizontalArray = new DialogGUIBase[2];
             horizontalArray[0] = new DialogGUISpace(10);
             horizontalArray[1] = new DialogGUIButton("Load Settings", () => SettingsClass.Instance.InGameLoad(), false); 
@@ -243,16 +249,16 @@ namespace Bureaucracy
                     GetRect(dialogElements), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"), false);
         }
 
-        private string ShowFunding(Manager manager, bool isBudget, bool isFirstPhaseOfBudget)
+        private string ShowFunding(Manager manager, bool breakDownBudget, bool getStratPortion)
         {
-            if (!isBudget)
+            if (!breakDownBudget)
             {
                 return Utilities.Instance.FundsSymbol + Math.Round(Utilities.Instance.GetNetBudget(manager.Name), 0).ToString("N0", CultureInfo.CurrentCulture);
             }
             else
             {
                 double netResult = 0;
-                if (isFirstPhaseOfBudget)
+                if (getStratPortion)
                 {
                     netResult = Utilities.Instance.GetNetBudget(manager.Name) * BudgetStats.lastCycleStratPercentageAsMult;
                 }
@@ -322,7 +328,7 @@ namespace Bureaucracy
                     innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
                 }
                 departmentFunding = Utilities.Instance.GetNetBudget("Budget") * BudgetStats.lastCycleStratPercentageAsMult;
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Strategy Funding (Estimate): " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Strategy Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
                 departmentFunding = Utilities.Instance.GetNetBudget("Budget") * (1 - BudgetStats.lastCycleStratPercentageAsMult);
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{departmentFunding.ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
