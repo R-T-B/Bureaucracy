@@ -260,11 +260,11 @@ namespace Bureaucracy
                 double netResult = 0;
                 if (getStratPortion)
                 {
-                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * BudgetStats.lastCycleStratPercentageAsMult;
+                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * BudgetStats.projectedStratPercentageAsMult;
                 }
                 else
                 {
-                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * (1 - BudgetStats.lastCycleStratPercentageAsMult); 
+                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * (1 - BudgetStats.projectedStratPercentageAsMult); 
                 }
                 return Utilities.Instance.FundsSymbol + Math.Round(netResult, 0).ToString("N0", CultureInfo.CurrentCulture);
             }
@@ -327,9 +327,9 @@ namespace Bureaucracy
                     if (departmentFunding < 0.0f) continue;
                     innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
                 }
-                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * BudgetStats.lastCycleStratPercentageAsMult;
+                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * BudgetStats.projectedStratPercentageAsMult;
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Strategy Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
-                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * (1 - BudgetStats.lastCycleStratPercentageAsMult);
+                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * (1 - BudgetStats.projectedStratPercentageAsMult);
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{departmentFunding.ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
                 vertical.AddChild(new DialogGUIContentSizer(widthMode: ContentSizeFitter.FitMode.Unconstrained, heightMode: ContentSizeFitter.FitMode.MinSize));

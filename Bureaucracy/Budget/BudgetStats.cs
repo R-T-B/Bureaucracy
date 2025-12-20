@@ -8,9 +8,17 @@ namespace Bureaucracy
 {
     public static class BudgetStats
     {
+        //Recorded lastCycle stats for report generation, don't need to store longterm
         public static double lastCycleStratCost = 0;
         public static float lastCycleStratPercentageAsMult = 0;
-        public static double lastMonthsTotalNetBudget = 0;
+        public static double lastCycleNetBudget = 0;
+        //Projected budget figures, updated every time the GUI opens via recalcBudgetFigures()
+        public static double projectedStratCost = 0;
+        public static float projectedStratPercentageAsMult = 0;
+        public static double projectedNetBudget = 0;
+
+        public static double lastMonthsStratCost { get; internal set; }
+
         public static void recalcBudgetFigures()
         {
             float oldRep = Reputation.Instance.reputation;
@@ -18,8 +26,8 @@ namespace Bureaucracy
             double oldFunds = Funding.Instance.Funds;
             // bootstrap does not need help.
             if (Utilities.Instance.IsBootstrapBudgetCycle) return;
-            lastMonthsTotalNetBudget = Utilities.Instance.GetNetBudget("Budget");
-            double funding = lastMonthsTotalNetBudget;
+            projectedNetBudget = Utilities.Instance.GetNetBudget("Budget");
+            double funding = projectedNetBudget;
             funding -= CrewManager.Instance.Bonuses(funding, true);
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
             double wageDebt = Math.Abs(funding + facilityDebt);
@@ -41,18 +49,19 @@ namespace Bureaucracy
                 double fundsAfter = Funding.Instance.Funds;
                 if (funding >= 0.0)
                 {
-                    lastMonthsTotalNetBudget = (fundsAfter - oldFunds);
-                    lastCycleStratCost = funding - lastMonthsTotalNetBudget;
-                    lastCycleStratPercentageAsMult = (float)(lastCycleStratCost / funding);
+                    projectedNetBudget = (fundsAfter - oldFunds);
+                    projectedStratCost = funding - projectedNetBudget;
+                    projectedStratPercentageAsMult = (float)(projectedStratCost / funding);
                 }
                 else
                 {
-                    lastCycleStratCost = funding;
-                    lastCycleStratPercentageAsMult = 1f;
+                    projectedStratCost = funding;
+                    projectedStratPercentageAsMult = 1f;
                 }
+                //Restore state
                 Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
                 ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
-                Funding.Instance.SetFunds(oldFunds,TransactionReasons.None);
+                Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
             }
         }
     }

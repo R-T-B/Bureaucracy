@@ -14,7 +14,7 @@ namespace Bureaucracy
             CompletionTime = budgetTime;
             Name = "Next Budget";
             ParentManager = manager;
-            if(newKacAlarm) Utilities.Instance.NewStockAlarm("Next Budget", "Next Budget", CompletionTime);
+            if (newKacAlarm) Utilities.Instance.NewStockAlarm("Next Budget", "Next Budget", CompletionTime);
             StopTimewarpOnCompletion = true;
             AddTimer();
         }
@@ -24,15 +24,15 @@ namespace Bureaucracy
             // if this is not the bootstrap budget cycle, then undo the flag
             if (CompletionTime > 0)
                 Utilities.Instance.IsBootstrapBudgetCycle = false;
-            
+
             Debug.Log("Bureaucracy]: OnBudgetAboutToFire");
             //Allows other Managers to do pre-budget work, as once the budget is done alot of stuff gets reset.
             InternalListeners.OnBudgetAboutToFire.Fire();
 
             // save Initial funds value for processing bootstrap cycle
             if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
-            BudgetStats.lastMonthsTotalNetBudget = Utilities.Instance.GetGrossBudget();
-            double funding = BudgetStats.lastMonthsTotalNetBudget;
+            BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
+            double funding = BudgetStats.lastCycleNetBudget;
             funding -= CrewManager.Instance.Bonuses(funding, true);
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
             double wageDebt = Math.Abs(funding + facilityDebt);
@@ -49,7 +49,7 @@ namespace Bureaucracy
             if (Utilities.Instance.IsBootstrapBudgetCycle)
                 Funding.Instance.SetFunds(0, TransactionReasons.None);
 
-            if(SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
+            if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
             if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
             {
                 double fundsBefore = Funding.Instance.Funds;
@@ -57,8 +57,8 @@ namespace Bureaucracy
                 double fundsAfter = Funding.Instance.Funds;
                 if (funding >= 0.0)
                 {
-                    BudgetStats.lastMonthsTotalNetBudget = (fundsAfter - fundsBefore);
-                    BudgetStats.lastCycleStratCost = funding - BudgetStats.lastMonthsTotalNetBudget;
+                    BudgetStats.lastCycleNetBudget = (fundsAfter - fundsBefore);
+                    BudgetStats.lastCycleStratCost = funding - BudgetStats.lastCycleNetBudget;
                     BudgetStats.lastCycleStratPercentageAsMult = (float)(BudgetStats.lastCycleStratCost / funding);
                 }
                 else
@@ -67,7 +67,7 @@ namespace Bureaucracy
                     BudgetStats.lastCycleStratPercentageAsMult = 1f;
                 }
             }
-            Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding "+funding+" Costs: "+facilityDebt);
+            Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding " + funding + " Costs: " + facilityDebt);
             InternalListeners.OnBudgetAwarded.Fire(funding, facilityDebt);
 
             // reset science processed in the current cycle
@@ -77,23 +77,23 @@ namespace Bureaucracy
             if (!Utilities.Instance.IsBootstrapBudgetCycle)
             {
                 StringBuilder reportBuilder = new StringBuilder();
-            for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
-            {
-                Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
-                m.ThisMonthsBudget = Utilities.Instance.GetNetBudget(m.Name);
+                for (int i = 0; i < Bureaucracy.Instance.registeredManagers.Count; i++)
+                {
+                    Manager m = Bureaucracy.Instance.registeredManagers.ElementAt(i);
+                    m.ThisMonthsBudget = Utilities.Instance.GetNetBudget(m.Name);
 
-                // build cycle report for the manager
-                var r = m.GetReport();
-                reportBuilder.AppendLine(r.ReportTitle.ToUpper().Replace("REPORT", "DETAILS"));
-                reportBuilder.AppendLine("==================================");
-                reportBuilder.AppendLine(r.ReportBody());
-                reportBuilder.AppendLine(String.Empty);
+                    // build cycle report for the manager
+                    var r = m.GetReport();
+                    reportBuilder.AppendLine(r.ReportTitle.ToUpper().Replace("REPORT", "DETAILS"));
+                    reportBuilder.AppendLine("==================================");
+                    reportBuilder.AppendLine(r.ReportBody());
+                    reportBuilder.AppendLine(String.Empty);
+                }
+
+                // show budget cycle window
+                UiController.Instance.BudgetCycleReportWindow(reportBuilder.ToString());
             }
 
-            // show budget cycle window
-            UiController.Instance.BudgetCycleReportWindow(reportBuilder.ToString());
-            }
-            
             InformParent();
             Costs.Instance.ResetLaunchCosts();
 
@@ -102,6 +102,6 @@ namespace Bureaucracy
             repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
             repDecay.ApplyHardMode();
         }
-        
+
     }
 }
