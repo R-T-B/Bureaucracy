@@ -17,8 +17,6 @@ namespace Bureaucracy
         public static float projectedStratPercentageAsMult = 0;
         public static double projectedNetBudget = 0;
 
-        public static double lastMonthsStratCost { get; internal set; }
-
         public static void recalcBudgetFigures(bool forPreviousMonth)
         {
             float oldRep = Reputation.Instance.reputation;

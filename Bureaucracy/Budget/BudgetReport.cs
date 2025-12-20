@@ -21,7 +21,7 @@ namespace Bureaucracy
             ReportBuilder.AppendLine($"Mission Bonuses: {Utilities.Instance.FundsSymbol}{CrewManager.Instance.LastBonus}");
             ReportBuilder.AppendLine($"Construction Department: {Utilities.Instance.FundsSymbol}{FacilityManager.Instance.GetAllocatedFunding().ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Research Department: {Utilities.Instance.FundsSymbol}{ResearchManager.Instance.GetAllocatedFunding().ToString("N0", CultureInfo.CurrentCulture)}");
-            double stratCost = BudgetStats.lastMonthsStratCost;
+            double stratCost = BudgetStats.lastCycleStratCost;
             this.ReportBuilder.AppendLine("Strategy Budget: " + Utilities.Instance.FundsSymbol + Math.Max(0.0, stratCost).ToString("N0", CultureInfo.CurrentCulture));
             double netBudget = BudgetStats.lastCycleNetBudget;
             ReportBuilder.AppendLine($"General Budget: {Utilities.Instance.FundsSymbol}{Math.Max(0, netBudget).ToString("N0", CultureInfo.CurrentCulture)}");
