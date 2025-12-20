@@ -31,15 +31,10 @@ namespace Bureaucracy
                 if (Utilities.Instance.IsBootstrapBudgetCycle) return;
                 projectedNetBudget = Utilities.Instance.GetNetBudget("Budget");
                 funding = projectedNetBudget;
-                funding -= CrewManager.Instance.Bonuses(funding, false, true);
+                wageDebt = CrewManager.Instance.Bonuses(funding, false);
+                funding -= wageDebt;
                 facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
-                wageDebt = Math.Abs(funding + facilityDebt);
-                if (funding <= 0)
-                {
-                    //pay wages first then facilities
-                    Utilities.Instance.PayWageDebt(wageDebt, true);
-                    Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt, true);
-                }
+                funding -= facilityDebt;
 
                 // if running bootstrap cycle, abort
                 if (Utilities.Instance.IsBootstrapBudgetCycle)
@@ -48,6 +43,7 @@ namespace Bureaucracy
                 if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
                 if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
                 {
+                    double fundsBefore = Funding.Instance.Funds;
                     Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
                     double fundsAfter = Funding.Instance.Funds;
                     //Restore state
@@ -56,9 +52,9 @@ namespace Bureaucracy
                     Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
                     if (funding >= 0.0)
                     {
-                        projectedNetBudget = (fundsAfter - oldFunds);
+                        projectedNetBudget = (fundsAfter - fundsBefore);
                         projectedStratCost = funding - projectedNetBudget;
-                        projectedStratPercentageAsMult = (float)(projectedStratCost / Utilities.Instance.GetNetBudget("Budget"));
+                        projectedStratPercentageAsMult = (float)(projectedStratCost / funding);
                     }
                     else
                     {
@@ -66,46 +62,42 @@ namespace Bureaucracy
                         projectedStratPercentageAsMult = 1f;
                     }
                 }
-                else
+            }
+            else
+            {
+                // bootstrap does not need help.
+                if (Utilities.Instance.IsBootstrapBudgetCycle) return;
+                lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
+                funding = lastCycleNetBudget;
+                wageDebt = CrewManager.Instance.Bonuses(funding, false);
+                funding -= wageDebt;
+                facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
+                funding -= facilityDebt;
+
+                // if running bootstrap cycle, abort
+                if (Utilities.Instance.IsBootstrapBudgetCycle)
+                    return;
+
+                if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
+                if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
                 {
-                    // bootstrap does not need help.
-                    if (Utilities.Instance.IsBootstrapBudgetCycle) return;
-                    lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
-                    funding = lastCycleNetBudget;
-                    funding -= CrewManager.Instance.Bonuses(funding, false, true);
-                    facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
-                    wageDebt = Math.Abs(funding + facilityDebt);
-                    if (funding <= 0)
+                    double fundsBefore = Funding.Instance.Funds;
+                    Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
+                    double fundsAfter = Funding.Instance.Funds;
+                    //Restore state
+                    Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
+                    ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
+                    Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
+                    if (funding >= 0.0)
                     {
-                        //pay wages first then facilities
-                        Utilities.Instance.PayWageDebt(wageDebt, true);
-                        Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt, true);
+                        lastCycleNetBudget = (fundsAfter - fundsBefore);
+                        lastCycleStratCost = funding - lastCycleNetBudget;
+                        lastCycleStratPercentageAsMult = (float)(lastCycleStratCost / funding);
                     }
-
-                    // if running bootstrap cycle, abort
-                    if (Utilities.Instance.IsBootstrapBudgetCycle)
-                        return;
-
-                    if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
-                    if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
+                    else
                     {
-                        Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
-                        double fundsAfter = Funding.Instance.Funds;
-                        //Restore state
-                        Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
-                        ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
-                        Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
-                        if (funding >= 0.0)
-                        {
-                            lastCycleNetBudget = (fundsAfter - oldFunds);
-                            lastCycleStratCost = funding - lastCycleNetBudget;
-                            lastCycleStratPercentageAsMult = (float)(lastCycleStratCost / Utilities.Instance.GetNetBudget("Budget"));
-                        }
-                        else
-                        {
-                            lastCycleStratCost = funding;
-                            lastCycleStratPercentageAsMult = 1f;
-                        }
+                        lastCycleStratCost = funding;
+                        lastCycleStratPercentageAsMult = 1f;
                     }
                 }
             }

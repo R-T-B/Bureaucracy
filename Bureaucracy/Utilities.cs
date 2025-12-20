@@ -63,7 +63,7 @@ namespace Bureaucracy
             
             double funding = GetGrossBudget();
             double costs = Costs.Instance.GetFacilityMaintenanceCosts();
-            costs += CrewManager.Instance.Bonuses(funding, false, true);
+            costs += CrewManager.Instance.Bonuses(funding, false);
             funding -= costs;
             float allocation = 1.0f;
             switch (department)
@@ -114,7 +114,7 @@ namespace Bureaucracy
             return amountToConvert * multiplier;
         }
 
-        public void PayWageDebt(double debt, bool simulate)
+        public void PayWageDebt(double debt)
         {
             fundsStored = Funding.Instance.Funds;
             debt = Math.Abs(debt);
@@ -124,21 +124,15 @@ namespace Bureaucracy
             for(int i = 0; i<CrewManager.Instance.Kerbals.Count; i++)
             {
                 CrewMember c = CrewManager.Instance.Kerbals.ElementAt(i).Value;
-                if (!simulate)
-                {
-                    unpaidKerbals = new List<CrewMember>();
-                    unpaidKerbals.Add(c);
-                }
+                unpaidKerbals = new List<CrewMember>();
+                unpaidKerbals.Add(c);
                 debt -= c.Wage;
                 if (debt <= 0) break;
             }
-            if (!simulate)
-            {
-                CrewManager.Instance.ProcessUnpaidKerbals(unpaidKerbals);
-            }
+            CrewManager.Instance.ProcessUnpaidKerbals(unpaidKerbals);
         }
 
-        public void PayFacilityDebt(double facilityDebt, double wageDebt, bool simulate)
+        public void PayFacilityDebt(double facilityDebt, double wageDebt)
         {
             facilityDebt = Math.Abs(facilityDebt);
             double fundsAvailable = Funding.Instance.Funds - wageDebt;
@@ -146,10 +140,7 @@ namespace Bureaucracy
             for (int i = 0; i < FacilityManager.Instance.Facilities.Count; i++)
             {
                 BureaucracyFacility bf = FacilityManager.Instance.Facilities.ElementAt(i);
-                if (!simulate)
-                {
-                    bf.CloseFacility();
-                }
+                bf.CloseFacility();
                 facilityDebt += bf.MaintenanceCost;
                 if (facilityDebt <= 0) break;
             }

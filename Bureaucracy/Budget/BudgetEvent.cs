@@ -33,15 +33,16 @@ namespace Bureaucracy
             if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
             BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
             double funding = BudgetStats.lastCycleNetBudget;
-            funding -= CrewManager.Instance.Bonuses(funding, true, false);
+            double wageDebt = CrewManager.Instance.Bonuses(funding, true);
+            funding -= wageDebt;
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
-            double wageDebt = Math.Abs(funding + facilityDebt);
+            funding -= facilityDebt;
             if (funding <= 0)
             {
                 Debug.Log("[Bureaucracy]: Funding <= 0. Paying debts");
                 //pay wages first then facilities
-                Utilities.Instance.PayWageDebt(wageDebt, false);
-                Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt, false);
+                Utilities.Instance.PayWageDebt(wageDebt);
+                Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt);
             }
             CrewManager.Instance.ProcessUnhappyCrew();
 
