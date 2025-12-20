@@ -33,7 +33,7 @@ namespace Bureaucracy
             if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
             BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
             double funding = BudgetStats.lastCycleNetBudget;
-            funding -= CrewManager.Instance.Bonuses(funding, true);
+            funding -= CrewManager.Instance.Bonuses(funding, true, false);
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
             double wageDebt = Math.Abs(funding + facilityDebt);
             if (funding <= 0)

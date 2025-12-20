@@ -116,18 +116,21 @@ namespace Bureaucracy
             }
         }
 
-        public int Bonuses(double availableFunding, bool clearBonuses)
+        public int Bonuses(double availableFunding, bool clearBonuses, bool simulate)
         {
             int bonus = 0;
             for (int i = 0; i < Kerbals.Count; i++)
             {
                 CrewMember c = Kerbals.ElementAt(i).Value;
                 int bonusToProcess = c.GetBonus(clearBonuses);
-                if (clearBonuses && bonusToProcess > 0 && availableFunding < bonusToProcess)
+                if (simulate)
                 {
-                    c.AddUnhappiness("not being paid");
+                    if (clearBonuses && bonusToProcess > 0 && availableFunding < bonusToProcess)
+                    {
+                        c.AddUnhappiness("not being paid");
+                    }
+                    else bonus += bonusToProcess;
                 }
-                else bonus += bonusToProcess;
                 availableFunding -= bonus;
             }
             lastBonus = bonus;
