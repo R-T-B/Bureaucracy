@@ -52,21 +52,21 @@ namespace Bureaucracy
                 {
                     Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
                     double fundsAfter = Funding.Instance.Funds;
+                    //Restore state
+                    Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
+                    ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
+                    Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
                     if (funding >= 0.0)
                     {
                         projectedNetBudget = (fundsAfter - oldFunds);
                         projectedStratCost = funding - projectedNetBudget;
-                        projectedStratPercentageAsMult = (float)(projectedStratCost / funding);
+                        projectedStratPercentageAsMult = (float)(projectedStratCost / Utilities.Instance.GetNetBudget("Budget"));
                     }
                     else
                     {
                         projectedStratCost = funding;
                         projectedStratPercentageAsMult = 1f;
                     }
-                    //Restore state
-                    Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
-                    ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
-                    Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
                 }
                 else
                 {
@@ -93,21 +93,21 @@ namespace Bureaucracy
                     {
                         Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
                         double fundsAfter = Funding.Instance.Funds;
+                        //Restore state
+                        Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
+                        ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
+                        Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
                         if (funding >= 0.0)
                         {
                             lastCycleNetBudget = (fundsAfter - oldFunds);
                             lastCycleStratCost = funding - lastCycleNetBudget;
-                            lastCycleStratPercentageAsMult = (float)(lastCycleStratCost / funding);
+                            lastCycleStratPercentageAsMult = (float)(lastCycleStratCost / Utilities.Instance.GetNetBudget("Budget"));
                         }
                         else
                         {
                             lastCycleStratCost = funding;
                             lastCycleStratPercentageAsMult = 1f;
                         }
-                        //Restore state
-                        Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
-                        ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
-                        Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
                     }
                 }
             }
