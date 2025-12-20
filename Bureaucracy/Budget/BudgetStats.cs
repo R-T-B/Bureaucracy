@@ -50,10 +50,10 @@ namespace Bureaucracy
                     Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
                     ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
                     Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
-                    if (funding >= 0.0)
+                    if (funding != 0.0)
                     {
                         projectedNetBudget = (fundsAfter - fundsBefore);
-                        projectedStratCost = funding - projectedNetBudget;
+                        projectedStratCost = Math.Abs(funding - (fundsAfter - fundsBefore));
                         projectedStratPercentageAsMult = (float)(projectedStratCost / funding);
                     }
                     else
@@ -88,10 +88,10 @@ namespace Bureaucracy
                     Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
                     ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
                     Funding.Instance.SetFunds(oldFunds, TransactionReasons.None);
-                    if (funding >= 0.0)
+                    if (funding != 0.0)
                     {
                         lastCycleNetBudget = (fundsAfter - fundsBefore);
-                        lastCycleStratCost = funding - lastCycleNetBudget;
+                        lastCycleStratCost = Math.Abs(funding - (fundsAfter - fundsBefore));
                         lastCycleStratPercentageAsMult = (float)(lastCycleStratCost / funding);
                     }
                     else

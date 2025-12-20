@@ -327,9 +327,9 @@ namespace Bureaucracy
                     if (departmentFunding < 0.0f) continue;
                     innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel(m.Name + " Department Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
                 }
-                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * BudgetStats.projectedStratPercentageAsMult;
+                departmentFunding = BudgetStats.projectedNetBudget * BudgetStats.projectedStratPercentageAsMult;
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Strategy Funding: " + Utilities.Instance.FundsSymbol + departmentFunding.ToString("N0", CultureInfo.CurrentCulture), false)));
-                departmentFunding = Utilities.Instance.GetNetBudget("Budget") * (1 - BudgetStats.projectedStratPercentageAsMult);
+                departmentFunding = BudgetStats.projectedNetBudget * (1 - BudgetStats.projectedStratPercentageAsMult);
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Net Budget: {Utilities.Instance.FundsSymbol}{departmentFunding.ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 DialogGUIVerticalLayout vertical = new DialogGUIVerticalLayout(innerElements.ToArray());
                 vertical.AddChild(new DialogGUIContentSizer(widthMode: ContentSizeFitter.FitMode.Unconstrained, heightMode: ContentSizeFitter.FitMode.MinSize));

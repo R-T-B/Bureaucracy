@@ -56,10 +56,10 @@ namespace Bureaucracy
                 double fundsBefore = Funding.Instance.Funds;
                 Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
                 double fundsAfter = Funding.Instance.Funds;
-                if (funding >= 0.0)
+                if (funding != 0.0)
                 {
                     BudgetStats.lastCycleNetBudget = (fundsAfter - fundsBefore);
-                    BudgetStats.lastCycleStratCost = funding - BudgetStats.lastCycleNetBudget;
+                    BudgetStats.lastCycleStratCost = Math.Abs(funding - (fundsAfter - fundsBefore));
                     BudgetStats.lastCycleStratPercentageAsMult = (float)(BudgetStats.lastCycleStratCost / funding);
                 }
                 else
@@ -68,6 +68,7 @@ namespace Bureaucracy
                     BudgetStats.lastCycleStratPercentageAsMult = 1f;
                 }
             }
+
             Debug.Log("[Bureaucracy]: OnBudgetAwarded. Awarding " + funding + " Costs: " + facilityDebt);
             InternalListeners.OnBudgetAwarded.Fire(funding, facilityDebt);
 
@@ -97,7 +98,6 @@ namespace Bureaucracy
 
             InformParent();
             Costs.Instance.ResetLaunchCosts();
-
             //We now apply rep decay and such
             RepDecay repDecay = new RepDecay();
             repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
