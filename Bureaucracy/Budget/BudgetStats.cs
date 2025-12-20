@@ -31,7 +31,7 @@ namespace Bureaucracy
                 if (Utilities.Instance.IsBootstrapBudgetCycle) return;
                 projectedNetBudget = Utilities.Instance.GetNetBudget("Budget");
                 funding = projectedNetBudget;
-                funding -= CrewManager.Instance.Bonuses(funding, true);
+                funding -= CrewManager.Instance.Bonuses(funding, false);
                 facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
                 wageDebt = Math.Abs(funding + facilityDebt);
                 if (funding <= 0)
@@ -72,7 +72,7 @@ namespace Bureaucracy
                     if (Utilities.Instance.IsBootstrapBudgetCycle) return;
                     lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
                     funding = lastCycleNetBudget;
-                    funding -= CrewManager.Instance.Bonuses(funding, true);
+                    funding -= CrewManager.Instance.Bonuses(funding, false);
                     facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
                     wageDebt = Math.Abs(funding + facilityDebt);
                     if (funding <= 0)
