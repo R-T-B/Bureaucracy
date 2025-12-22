@@ -260,11 +260,11 @@ namespace Bureaucracy
                 double netResult = 0;
                 if (getStratPortion)
                 {
-                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * BudgetStats.projectedStratPercentageAsMult;
+                    netResult = BudgetStats.projectedStratCost;
                 }
                 else
                 {
-                    netResult = Utilities.Instance.GetNetBudget(manager.Name) * (1 - BudgetStats.projectedStratPercentageAsMult); 
+                    netResult = BudgetStats.projectedNetBudget;
                 }
                 return Utilities.Instance.FundsSymbol + Math.Round(netResult, 0).ToString("N0", CultureInfo.CurrentCulture);
             }
