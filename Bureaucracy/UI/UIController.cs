@@ -400,7 +400,7 @@ namespace Bureaucracy
 
         private int GetBonusesToPay()
         {
-            int pay = CrewManager.Instance.LastBonus;
+            int pay = CrewManager.Instance.LastIssuedBonus;
             CrewManager.Instance.ClearBonusTally();
             return pay;
         }

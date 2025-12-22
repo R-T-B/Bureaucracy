@@ -34,6 +34,7 @@ namespace Bureaucracy
             BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
             double funding = BudgetStats.lastCycleNetBudget;
             double wageDebt = CrewManager.Instance.Bonuses(funding, true);
+            CrewManager.Instance.LastIssuedBonus = (int)(Math.Round(wageDebt));
             funding -= wageDebt;
             double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
             funding -= facilityDebt;
