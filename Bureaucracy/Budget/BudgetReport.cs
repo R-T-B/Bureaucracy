@@ -18,7 +18,7 @@ namespace Bureaucracy
             ReportBuilder.AppendLine($"Facility Maintenance Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetFacilityMaintenanceCosts().ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Launch Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetLaunchCosts().ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Total Maintenance Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetTotalMaintenanceCosts().ToString("N0", CultureInfo.CurrentCulture)}");
-            ReportBuilder.AppendLine($"Mission Bonuses: {Utilities.Instance.FundsSymbol}{CrewManager.Instance.LastIssuedBonus}");
+            ReportBuilder.AppendLine($"Mission Bonuses: {Utilities.Instance.FundsSymbol}{CrewManager.Instance.LastIssuedBonus.ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Construction Department: {Utilities.Instance.FundsSymbol}{FacilityManager.Instance.GetAllocatedFunding().ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Research Department: {Utilities.Instance.FundsSymbol}{ResearchManager.Instance.GetAllocatedFunding().ToString("N0", CultureInfo.CurrentCulture)}");
             double stratCost = BudgetStats.lastCycleStratCost;
