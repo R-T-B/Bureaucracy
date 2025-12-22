@@ -36,7 +36,7 @@ namespace Bureaucracy
 
         public void ClearBonusTally()
         {
-            lastIssuedBonus = 0;
+            lastBonus = 0;
         }
 
         public override Report GetReport()
