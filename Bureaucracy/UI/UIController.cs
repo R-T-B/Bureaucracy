@@ -206,7 +206,7 @@ namespace Bureaucracy
                     if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
                     horizontalArray = new DialogGUIBase[3];
                     horizontalArray[0] = new DialogGUISpace(10);
-                    horizontalArray[1] = new DialogGUILabel("Net Income: ");
+                    horizontalArray[1] = new DialogGUILabel("Net Spendable: ");
                     horizontalArray[2] = new DialogGUILabel(() => ShowFunding(m, false, false));
                     innerElements.Add(new DialogGUIHorizontalLayout(horizontalArray));
                     if (Utilities.Instance.GetNetBudget(m.Name) == -1.0f) continue;
@@ -253,7 +253,8 @@ namespace Bureaucracy
         {
             if (!breakDownBudget)
             {
-                return Utilities.Instance.FundsSymbol + Math.Round(Utilities.Instance.GetNetBudget(manager.Name), 0).ToString("N0", CultureInfo.CurrentCulture);
+                int totalSpendable = (int)Math.Round(BudgetStats.projectedNetBudget + BudgetStats.projectedStratCost + Utilities.Instance.GetNetBudget("Research") + Utilities.Instance.GetNetBudget("Construction"));
+                return Utilities.Instance.FundsSymbol + totalSpendable.ToString("N0", CultureInfo.CurrentCulture);
             }
             else
             {
