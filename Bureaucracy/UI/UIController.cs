@@ -251,10 +251,14 @@ namespace Bureaucracy
 
         private string ShowFunding(Manager manager, bool breakDownBudget, bool getStratPortion)
         {
-            if (!breakDownBudget)
+            if ((!breakDownBudget) && (manager.Name.Equals("Budget")))
             {
                 int totalSpendable = (int)Math.Round(BudgetStats.projectedNetBudget + BudgetStats.projectedStratCost + Utilities.Instance.GetNetBudget("Research") + Utilities.Instance.GetNetBudget("Construction"));
                 return Utilities.Instance.FundsSymbol + totalSpendable.ToString("N0", CultureInfo.CurrentCulture);
+            }
+            else if (!breakDownBudget)
+            {
+                return Utilities.Instance.FundsSymbol + Math.Round(Utilities.Instance.GetNetBudget(manager.Name), 0).ToString("N0", CultureInfo.CurrentCulture);
             }
             else
             {
