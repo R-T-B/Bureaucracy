@@ -281,6 +281,7 @@ namespace Bureaucracy
             float actualAllocation = i / 100.0f;
             Manager m = Utilities.Instance.GetManagerByName(managerName);
             m.FundingAllocation = actualAllocation;
+            BudgetStats.recalcBudgetFigures(false);
             switch (managerName)
             {
                 case "Budget":
