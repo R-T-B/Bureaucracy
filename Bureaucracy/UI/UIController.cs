@@ -399,9 +399,13 @@ namespace Bureaucracy
         }
 
         private int GetBonusesToPay()
-        {
+        { 
             int pay = CrewManager.Instance.LastIssuedBonus;
-            CrewManager.Instance.ClearBonusTally();
+            if (pay.Equals(int.MinValue))
+            {
+                pay = CrewManager.Instance.LastBonus;
+                CrewManager.Instance.LastIssuedBonus = pay;
+            }
             return pay;
         }
 

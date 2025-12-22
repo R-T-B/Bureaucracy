@@ -10,7 +10,7 @@ namespace Bureaucracy
         public static CrewManager Instance;
         public readonly Dictionary<string, CrewMember> Kerbals = new Dictionary<string, CrewMember>();
         private int lastBonus;
-        private int lastIssuedBonus;
+        private int lastIssuedBonus = int.MinValue;
         public readonly Dictionary<CrewMember, string> UnhappyCrewOutcomes = new Dictionary<CrewMember, string>();
         private Guid lastProcessedVessel = Guid.Empty;
         public readonly List<string> Retirees = new List<string>();
@@ -32,11 +32,6 @@ namespace Bureaucracy
             {
                 lastIssuedBonus = value;
             }
-        }
-
-        public void ClearBonusTally()
-        {
-            lastBonus = 0;
         }
 
         public override Report GetReport()
