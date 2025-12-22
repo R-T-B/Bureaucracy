@@ -18,10 +18,13 @@ namespace Bureaucracy
         {
             get
             {
-                int bonusToReturn = lastBonus;
-                lastBonus = 0;
-                return bonusToReturn;
+                return lastBonus;
             }
+        }
+
+        public void ClearBonusTally()
+        {
+            lastBonus = 0;
         }
 
         public override Report GetReport()

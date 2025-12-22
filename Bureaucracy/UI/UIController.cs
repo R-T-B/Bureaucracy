@@ -400,13 +400,9 @@ namespace Bureaucracy
 
         private int GetBonusesToPay()
         {
-            int bonusesToPay = 0;
-            for (int i = 0; i < CrewManager.Instance.Kerbals.Count; i++)
-            {
-                CrewMember c = CrewManager.Instance.Kerbals.ElementAt(i).Value;
-                bonusesToPay += c.GetBonus(false);
-            }
-            return bonusesToPay;
+            int pay = CrewManager.Instance.LastBonus;
+            CrewManager.Instance.ClearBonusTally();
+            return pay;
         }
 
         private PopupDialog DrawFacilityUi()
