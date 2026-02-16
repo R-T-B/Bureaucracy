@@ -46,6 +46,8 @@ namespace Bureaucracy
                 Utilities.Instance.PayFacilityDebt(facilityDebt, wageDebt);
             }
             CrewManager.Instance.ProcessUnhappyCrew();
+            RepDecay repDecay = new RepDecay();
+            repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
 
             // if running bootstrap cycle, zero current funds before awarding initial surplus from calculations
             if (Utilities.Instance.IsBootstrapBudgetCycle)
@@ -99,9 +101,7 @@ namespace Bureaucracy
 
             InformParent();
             Costs.Instance.ResetLaunchCosts();
-            //We now apply rep decay and such
-            RepDecay repDecay = new RepDecay();
-            repDecay.ApplyRepDecay(Bureaucracy.Instance.settings.RepDecayPercent);
+            //We now apply hard mode and such
             repDecay.ApplyHardMode();
         }
 
