@@ -531,8 +531,15 @@ namespace Bureaucracy
             int allocations = GetAllocation(BudgetManager.Instance);
             allocations += GetAllocation(ResearchManager.Instance);
             allocations+=  + GetAllocation(FacilityManager.Instance);
-            if (allocations <99.9 || allocations >100.1) errorWindow = AllocationErrorWindow();
-            else DismissAllWindows();
+            if (allocations < 99.9 || allocations > 100.1)
+            {
+                errorWindow = AllocationErrorWindow();
+            }
+            else
+            {
+                toolbarButton.toggleButton.Value = false;
+                DismissAllWindows();
+            }
         }
 
         private PopupDialog AllocationErrorWindow()
