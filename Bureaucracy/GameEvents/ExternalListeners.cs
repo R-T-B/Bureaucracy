@@ -135,20 +135,24 @@ namespace Bureaucracy
 
         private void PotentialKerbalDeath(ProtoCrewMember crewMember, ProtoCrewMember.RosterStatus statusFrom, ProtoCrewMember.RosterStatus statusTo)
         {
-            if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER) return;
-            //No need to check if the Kerbal hasn't died. Kerbals always go missing before they go dead, so just check for Missing.
-            if (statusTo != ProtoCrewMember.RosterStatus.Missing) return;
-            using (List<string>.Enumerator enumerator = CrewManager.Instance.Retirees.GetEnumerator()) //Also this block of code below checks if the missing / dead kerbal is a retiree, in fact.
+            if (HighLogic.CurrentGame.Mode != Game.Modes.CAREER)
             {
-                while (enumerator.MoveNext())
+                return;
+            }
+            if (statusTo.Equals(ProtoCrewMember.RosterStatus.Missing) || statusTo.Equals(ProtoCrewMember.RosterStatus.Dead))
+            {
+                using (List<string>.Enumerator enumerator = CrewManager.Instance.Retirees.GetEnumerator())
                 {
-                    if (enumerator.Current.Equals(crewMember.name))
+                    while (enumerator.MoveNext())
                     {
-                        return;
+                        if (enumerator.Current.Equals(crewMember.name))
+                        {
+                            return;
+                        }
                     }
                 }
+                CrewManager.Instance.ProcessDeadKerbal(crewMember);
             }
-            CrewManager.Instance.ProcessDeadKerbal(crewMember);
         }
 
         private void OnCrewMemberHired(ProtoCrewMember crewMember, int numberOfActiveKerbals)
