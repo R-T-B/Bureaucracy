@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Expansions.Missions;
@@ -20,14 +21,14 @@ namespace Bureaucracy
 
         public string Name { get; private set; }
 
-        public double Wage
+        public int Wage
         {
             get
             {
                 float experienceLevel = crewRef.experienceLevel;
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (experienceLevel == 0) experienceLevel = 0.5f;
-                return experienceLevel * SettingsClass.Instance.KerbalBaseWage*WageModifier;
+                return ((int)(Math.Round(experienceLevel * SettingsClass.Instance.KerbalBaseWage*WageModifier)));
             }
         }
 
