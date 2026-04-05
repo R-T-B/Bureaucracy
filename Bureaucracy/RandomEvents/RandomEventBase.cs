@@ -62,6 +62,7 @@ namespace Bureaucracy
             dialogElements.Add(new DialogGUIButton(AcceptString, OnEventAccepted));
             if(CanBeDeclined) dialogElements.Add(new DialogGUIButton(declineString, OnEventDeclined));
             eventDialog = PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new MultiOptionDialog("EventDialog", "", Title, UISkinManager.GetSkin("MainMenuSkin"), new Rect(0.5f, 0.5f, 300, 200), dialogElements.ToArray()), false, UISkinManager.GetSkin("MainMenuSkin"));
+            TimeWarp.SetRate(0, true, true);
         }
 
         private DialogGUIBase[] PaddedLabel(string stringToPad)
