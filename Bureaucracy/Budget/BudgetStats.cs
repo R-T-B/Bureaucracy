@@ -27,18 +27,12 @@ namespace Bureaucracy
             double wageDebt = 0;
             if (!forPreviousMonth)
             {
-                // bootstrap does not need help.
-                if (Utilities.Instance.IsBootstrapBudgetCycle) return;
                 projectedNetBudget = Utilities.Instance.GetNetBudget("Budget");
-                funding = projectedNetBudget;
+                funding = projectedNetBudget + Costs.Instance.GetFacilityMaintenanceCosts() + CrewManager.Instance.Bonuses(Utilities.Instance.GetGrossBudget(false), false);
                 wageDebt = CrewManager.Instance.Bonuses(funding, false);
                 funding -= wageDebt;
                 facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
                 funding -= facilityDebt;
-
-                // if running bootstrap cycle, abort
-                if (Utilities.Instance.IsBootstrapBudgetCycle)
-                    return;
 
                 if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
                 if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
@@ -58,27 +52,32 @@ namespace Bureaucracy
                     }
                     else
                     {
-                        projectedStratCost = funding;
-                        projectedStratPercentageAsMult = 1f;
+                        projectedStratCost = 0;
+                        projectedStratPercentageAsMult = 0f;
                     }
                 }
             }
             else
             {
                 // bootstrap does not need help.
-                if (Utilities.Instance.IsBootstrapBudgetCycle) return;
-                lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
-                funding = lastCycleNetBudget;
+                if (Utilities.Instance.IsBootstrapBudgetCycle)
+                {
+                    Utilities.Instance.InitialFunds = HighLogic.CurrentGame.Parameters.Career.StartingFunds;
+                    BudgetStats.lastCycleNetBudget = Utilities.Instance.InitialFunds;
+                }
+                else
+                {
+                    BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
+                }
+                funding = lastCycleNetBudget + Costs.Instance.GetFacilityMaintenanceCosts() + CrewManager.Instance.Bonuses(Utilities.Instance.GetGrossBudget(true), false);
                 wageDebt = CrewManager.Instance.Bonuses(funding, false);
                 funding -= wageDebt;
                 facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
                 funding -= facilityDebt;
 
-                // if running bootstrap cycle, abort
-                if (Utilities.Instance.IsBootstrapBudgetCycle)
-                    return;
+                if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) 
+                    Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
 
-                if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
                 if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
                 {
                     double fundsBefore = Funding.Instance.Funds;
@@ -91,13 +90,22 @@ namespace Bureaucracy
                     if (funding != 0.0)
                     {
                         lastCycleNetBudget = (fundsAfter - fundsBefore);
-                        lastCycleStratCost = Math.Abs(funding - (fundsAfter - fundsBefore));
-                        lastCycleStratPercentageAsMult = (float)(lastCycleStratCost / funding);
+                        if (Utilities.Instance.IsBootstrapBudgetCycle)
+                        {
+                            lastCycleStratCost = 0;
+                            lastCycleStratPercentageAsMult = 0;
+                        }
+                        else
+                        {
+                            lastCycleStratCost = Math.Abs(funding - (fundsAfter - fundsBefore));
+                            lastCycleStratPercentageAsMult = (float)(lastCycleStratCost / funding);
+                        }
+
                     }
                     else
                     {
-                        lastCycleStratCost = funding;
-                        lastCycleStratPercentageAsMult = 1f;
+                        lastCycleStratCost = 0;
+                        lastCycleStratPercentageAsMult = 0f;
                     }
                 }
             }

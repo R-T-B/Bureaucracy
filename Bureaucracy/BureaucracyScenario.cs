@@ -11,8 +11,9 @@ namespace Bureaucracy
 
         public override void OnLoad(ConfigNode node)
         {
-            BudgetStats.recalcBudgetFigures(true);
             Bureaucracy.Instance.OnLoad(node);
+            Utilities.Instance.InitialFunds = HighLogic.CurrentGame.Parameters.Career.StartingFunds;
+            BudgetStats.recalcBudgetFigures(true);
         }
     }
 }

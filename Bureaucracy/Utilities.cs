@@ -44,13 +44,13 @@ namespace Bureaucracy
             double num2 = (universalTime - num * solarDayLength) / solarDayLength * 24.0;
             return num2;
         }
-        public double GetGrossBudget()
+        public double GetGrossBudget(bool lastmonth)
         {
             // if it's the bootstrap cycle, don't calculate budget based on reputation
             // instead, gross budget is the current (initial) funds of the game save
-            if (IsBootstrapBudgetCycle) return InitialFunds;
+            if (IsBootstrapBudgetCycle && lastmonth) return HighLogic.CurrentGame.Parameters.Career.StartingFunds;
 
-            return Math.Round(Reputation.Instance.reputation * SettingsClass.Instance.BudgetMultiplier, 0);
+            return Math.Max(Math.Round(Reputation.Instance.reputation * SettingsClass.Instance.BudgetMultiplier + 50000, 0),0);
         }
 
         public double GetMonthLength()
@@ -61,7 +61,7 @@ namespace Bureaucracy
         public double GetNetBudget(string department)
         {
             
-            double funding = GetGrossBudget();
+            double funding = GetGrossBudget(false);
             double costs = Costs.Instance.GetFacilityMaintenanceCosts();
             costs += CrewManager.Instance.Bonuses(funding, false);
             funding -= costs;

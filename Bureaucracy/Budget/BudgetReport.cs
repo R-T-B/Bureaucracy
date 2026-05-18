@@ -13,7 +13,7 @@ namespace Bureaucracy
         public override string ReportBody()
         {
             ReportBuilder.Clear();
-            ReportBuilder.AppendLine($"Gross Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetGrossBudget().ToString("N0", CultureInfo.CurrentCulture)}");
+            ReportBuilder.AppendLine($"Gross Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetGrossBudget(true).ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Staff Wages: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetWageCosts().ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Facility Maintenance Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetFacilityMaintenanceCosts().ToString("N0", CultureInfo.CurrentCulture)}");
             ReportBuilder.AppendLine($"Launch Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetLaunchCosts().ToString("N0", CultureInfo.CurrentCulture)}");

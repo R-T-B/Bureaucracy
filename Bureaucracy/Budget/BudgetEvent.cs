@@ -30,9 +30,16 @@ namespace Bureaucracy
             InternalListeners.OnBudgetAboutToFire.Fire();
 
             // save Initial funds value for processing bootstrap cycle
-            if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
-            BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget") + Costs.Instance.GetFacilityMaintenanceCosts() + CrewManager.Instance.Bonuses(Utilities.Instance.GetGrossBudget(), false);
-            double funding = BudgetStats.lastCycleNetBudget;
+            if (Utilities.Instance.IsBootstrapBudgetCycle)
+            {
+                Utilities.Instance.InitialFunds = Funding.Instance.Funds;
+                BudgetStats.lastCycleNetBudget = Utilities.Instance.InitialFunds;
+            }
+            else
+            {
+                BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
+            }
+            double funding = BudgetStats.lastCycleNetBudget + Costs.Instance.GetFacilityMaintenanceCosts() + CrewManager.Instance.Bonuses(Utilities.Instance.GetGrossBudget(true), false);
             double wageDebt = CrewManager.Instance.Bonuses(funding, true);
             CrewManager.Instance.LastIssuedBonus = (int)(Math.Round(wageDebt));
             funding -= wageDebt;
@@ -56,19 +63,36 @@ namespace Bureaucracy
             if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
             if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
             {
-                double fundsBefore = Funding.Instance.Funds;
+                double fundsBefore = 0;
+                if (Utilities.Instance.IsBootstrapBudgetCycle)
+                {
+                    fundsBefore = Utilities.Instance.InitialFunds;
+                }
+                else
+                {
+                    fundsBefore = Funding.Instance.Funds;
+                }
                 Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
                 double fundsAfter = Funding.Instance.Funds;
                 if (funding != 0.0)
                 {
                     BudgetStats.lastCycleNetBudget = (fundsAfter - fundsBefore);
-                    BudgetStats.lastCycleStratCost = Math.Abs(funding - (fundsAfter - fundsBefore));
-                    BudgetStats.lastCycleStratPercentageAsMult = (float)(BudgetStats.lastCycleStratCost / funding);
+                    if (Utilities.Instance.IsBootstrapBudgetCycle)
+                    {
+                        BudgetStats.lastCycleStratCost = 0;
+                        BudgetStats.lastCycleStratPercentageAsMult = 0;
+                    }
+                    else
+                    {
+                        BudgetStats.lastCycleStratCost = Math.Abs(funding - (fundsAfter - fundsBefore));
+                        BudgetStats.lastCycleStratPercentageAsMult = (float)(BudgetStats.lastCycleStratCost / funding);
+                    }
+
                 }
                 else
                 {
-                    BudgetStats.lastCycleStratCost = funding;
-                    BudgetStats.lastCycleStratPercentageAsMult = 1f;
+                    BudgetStats.lastCycleStratCost = 0;
+                    BudgetStats.lastCycleStratPercentageAsMult = 0f;
                 }
             }
 

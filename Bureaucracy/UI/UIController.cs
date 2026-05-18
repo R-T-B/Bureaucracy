@@ -319,7 +319,7 @@ namespace Bureaucracy
             {
                 innerElements.Add(new DialogGUISpace(10));
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel("Next Budget: " + Utilities.Instance.ConvertUtToKspTimeStamp(BudgetManager.Instance.NextBudget.CompletionTime), false)));
-                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Gross Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetGrossBudget().ToString("N0", CultureInfo.CurrentCulture)}", false)));
+                innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Gross Budget: {Utilities.Instance.FundsSymbol}{Utilities.Instance.GetGrossBudget(false).ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Wage Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetWageCosts().ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Facility Maintenance Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetFacilityMaintenanceCosts().ToString("N0", CultureInfo.CurrentCulture)}", false)));
                 innerElements.Add(new DialogGUIHorizontalLayout(PaddedLabel($"Launch Costs: {Utilities.Instance.FundsSymbol}{Costs.Instance.GetLaunchCosts().ToString("N0", CultureInfo.CurrentCulture)}", false)));
