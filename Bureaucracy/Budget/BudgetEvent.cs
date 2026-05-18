@@ -31,7 +31,7 @@ namespace Bureaucracy
 
             // save Initial funds value for processing bootstrap cycle
             if (Utilities.Instance.IsBootstrapBudgetCycle) Utilities.Instance.InitialFunds = Funding.Instance.Funds;
-            BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
+            BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget") + Costs.Instance.GetFacilityMaintenanceCosts() + CrewManager.Instance.Bonuses(Utilities.Instance.GetGrossBudget(), false);
             double funding = BudgetStats.lastCycleNetBudget;
             double wageDebt = CrewManager.Instance.Bonuses(funding, true);
             CrewManager.Instance.LastIssuedBonus = (int)(Math.Round(wageDebt));
