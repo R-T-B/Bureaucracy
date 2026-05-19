@@ -28,18 +28,28 @@ namespace Bureaucracy
             if (!forPreviousMonth)
             {
                 projectedNetBudget = Utilities.Instance.GetNetBudget("Budget");
-                funding = projectedNetBudget + Costs.Instance.GetFacilityMaintenanceCosts() + CrewManager.Instance.Bonuses(Utilities.Instance.GetGrossBudget(false), false);
-                wageDebt = CrewManager.Instance.Bonuses(funding, false);
+                funding = projectedNetBudget + Costs.Instance.GetWageCosts() + CrewManager.Instance.Bonuses(Double.MaxValue, false) + Costs.Instance.GetLaunchCosts() + Costs.Instance.GetFacilityMaintenanceCosts();
+                wageDebt = CrewManager.Instance.Bonuses(funding, false) + Costs.Instance.GetWageCosts();
                 funding -= wageDebt;
-                facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
+                facilityDebt = Costs.Instance.GetLaunchCosts() + Costs.Instance.GetFacilityMaintenanceCosts();
                 funding -= facilityDebt;
 
                 if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
                 if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
                 {
-                    double fundsBefore = Funding.Instance.Funds;
-                    Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
-                    double fundsAfter = Funding.Instance.Funds;
+                    double fundsBefore = 0;
+                    double fundsAfter = 0;
+                    if (Utilities.Instance.IsBootstrapBudgetCycle)
+                    {
+                        fundsBefore = 0;
+                        fundsAfter = Utilities.Instance.InitialFunds;
+                    }
+                    else
+                    {
+                        fundsBefore = Funding.Instance.Funds;
+                        Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
+                        fundsAfter = Funding.Instance.Funds;
+                    }
                     //Restore state
                     Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
                     ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);
@@ -69,10 +79,10 @@ namespace Bureaucracy
                 {
                     BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
                 }
-                funding = lastCycleNetBudget + Costs.Instance.GetFacilityMaintenanceCosts() + CrewManager.Instance.Bonuses(Utilities.Instance.GetGrossBudget(true), false);
-                wageDebt = CrewManager.Instance.Bonuses(funding, false);
+                funding = lastCycleNetBudget + Costs.Instance.GetWageCosts() + CrewManager.Instance.Bonuses(Double.MaxValue, false) + Costs.Instance.GetLaunchCosts() + Costs.Instance.GetFacilityMaintenanceCosts();
+                wageDebt = CrewManager.Instance.Bonuses(funding, false) + Costs.Instance.GetWageCosts();
                 funding -= wageDebt;
-                facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
+                facilityDebt = Costs.Instance.GetLaunchCosts() + Costs.Instance.GetFacilityMaintenanceCosts();
                 funding -= facilityDebt;
 
                 if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) 
@@ -80,9 +90,19 @@ namespace Bureaucracy
 
                 if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
                 {
-                    double fundsBefore = Funding.Instance.Funds;
-                    Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
-                    double fundsAfter = Funding.Instance.Funds;
+                    double fundsBefore = 0;
+                    double fundsAfter = 0;
+                    if (Utilities.Instance.IsBootstrapBudgetCycle)
+                    {
+                        fundsBefore = 0;
+                        fundsAfter = Utilities.Instance.InitialFunds;
+                    }
+                    else
+                    {
+                        fundsBefore = Funding.Instance.Funds;
+                        Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
+                        fundsAfter = Funding.Instance.Funds;
+                    }
                     //Restore state
                     Reputation.Instance.SetReputation(oldRep, TransactionReasons.None);
                     ResearchAndDevelopment.Instance.SetScience(oldSci, TransactionReasons.None);

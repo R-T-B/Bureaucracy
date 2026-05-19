@@ -21,10 +21,6 @@ namespace Bureaucracy
 
         public override void OnEventCompleted()
         {
-            // if this is not the bootstrap budget cycle, then undo the flag
-            if (CompletionTime > 0)
-                Utilities.Instance.IsBootstrapBudgetCycle = false;
-
             Debug.Log("Bureaucracy]: OnBudgetAboutToFire");
             //Allows other Managers to do pre-budget work, as once the budget is done alot of stuff gets reset.
             InternalListeners.OnBudgetAboutToFire.Fire();
@@ -39,11 +35,12 @@ namespace Bureaucracy
             {
                 BudgetStats.lastCycleNetBudget = Utilities.Instance.GetNetBudget("Budget");
             }
-            double funding = BudgetStats.lastCycleNetBudget + Costs.Instance.GetFacilityMaintenanceCosts() + CrewManager.Instance.Bonuses(Utilities.Instance.GetGrossBudget(true), false);
+            double funding = BudgetStats.lastCycleNetBudget + Costs.Instance.GetWageCosts() + CrewManager.Instance.Bonuses(Double.MaxValue, false) + Costs.Instance.GetLaunchCosts() + Costs.Instance.GetFacilityMaintenanceCosts();
             double wageDebt = CrewManager.Instance.Bonuses(funding, true);
             CrewManager.Instance.LastIssuedBonus = (int)(Math.Round(wageDebt));
+            wageDebt += Costs.Instance.GetWageCosts();
             funding -= wageDebt;
-            double facilityDebt = Costs.Instance.GetFacilityMaintenanceCosts();
+            double facilityDebt = Costs.Instance.GetLaunchCosts() + Costs.Instance.GetFacilityMaintenanceCosts();
             funding -= facilityDebt;
             if (funding <= 0)
             {
@@ -60,20 +57,24 @@ namespace Bureaucracy
             if (Utilities.Instance.IsBootstrapBudgetCycle)
                 Funding.Instance.SetFunds(0, TransactionReasons.None);
 
-            if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0.0d, TransactionReasons.Contracts);
+            if (SettingsClass.Instance.UseItOrLoseIt && funding > Funding.Instance.Funds) Funding.Instance.SetFunds(0, TransactionReasons.None);
             if (!SettingsClass.Instance.UseItOrLoseIt || Funding.Instance.Funds <= 0.0d || funding <= 0.0d || Utilities.Instance.IsBootstrapBudgetCycle)
             {
                 double fundsBefore = 0;
+                double fundsAfter = 0;
                 if (Utilities.Instance.IsBootstrapBudgetCycle)
                 {
-                    fundsBefore = Utilities.Instance.InitialFunds;
+                    fundsBefore = 0;
+                    fundsAfter = Utilities.Instance.InitialFunds;
+                    Funding.Instance.AddFunds(fundsAfter, TransactionReasons.Contracts);
                 }
                 else
                 {
                     fundsBefore = Funding.Instance.Funds;
+                    Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
+                    fundsAfter = Funding.Instance.Funds;
                 }
-                Funding.Instance.AddFunds(funding, TransactionReasons.Contracts);
-                double fundsAfter = Funding.Instance.Funds;
+
                 if (funding != 0.0)
                 {
                     BudgetStats.lastCycleNetBudget = (fundsAfter - fundsBefore);
@@ -127,6 +128,7 @@ namespace Bureaucracy
             Costs.Instance.ResetLaunchCosts();
             //We now apply hard mode and such
             repDecay.ApplyHardMode();
+            Utilities.Instance.IsBootstrapBudgetCycle = false;
         }
 
     }

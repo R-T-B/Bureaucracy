@@ -62,8 +62,10 @@ namespace Bureaucracy
         {
             
             double funding = GetGrossBudget(false);
-            double costs = Costs.Instance.GetFacilityMaintenanceCosts();
-            costs += CrewManager.Instance.Bonuses(funding, false);
+            double costs = Costs.Instance.GetWageCosts();
+            costs += Costs.Instance.GetLaunchCosts();
+            costs += Costs.Instance.GetFacilityMaintenanceCosts();
+            costs += CrewManager.Instance.Bonuses(Double.MaxValue, false);
             funding -= costs;
             float allocation = 1.0f;
             switch (department)
