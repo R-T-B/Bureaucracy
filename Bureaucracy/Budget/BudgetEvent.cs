@@ -119,9 +119,11 @@ namespace Bureaucracy
                     reportBuilder.AppendLine(r.ReportBody());
                     reportBuilder.AppendLine(String.Empty);
                 }
-
-                // show budget cycle window
-                UiController.Instance.BudgetCycleReportWindow(reportBuilder.ToString());
+                if (HighLogic.LoadedScene.Equals(GameScenes.SPACECENTER))
+                {
+                    // show budget cycle window
+                    UiController.Instance.BudgetCycleReportWindow(reportBuilder.ToString());
+                }
             }
 
             InformParent();
